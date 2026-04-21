@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sambandh Sales | Premium Pre-Cast Concrete Wall Panels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --bg-color: #ffffff; 
+            --bg-alt: #f7f7f5;
+            --text-dark: #111111; 
+            --text-light: #555555;
+            --accent-color: #d1c8c1; 
+            --border-color: #e5e5e5;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+
+        /* --- FADE IN ANIMATION UTILITY --- */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- HEADER & NAVIGATION --- */
+        header { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 15px; z-index: 1001; text-decoration: none;}
+        .logo img { max-height: 45px; width: auto; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        
+        nav ul { list-style: none; display: flex; gap: 40px; }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; position: relative; }
+        nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
+        nav a:hover::after { width: 100%; }
+
+        /* HAMBURGER ICON */
+        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 1001; }
+        .hamburger span { display: block; width: 30px; height: 2px; background-color: var(--text-dark); transition: all 0.3s ease-in-out; }
+
+        /* --- HERO SLIDER --- */
+        .hero { position: relative; width: 100%; height: 95vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .hero img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.65); transition: opacity 1.5s ease-in-out; }
+        .hero-content { text-align: center; color: #fff; max-width: 900px; padding: 40px; z-index: 2; }
+        .hero-content h1 { font-family: 'Playfair Display', serif; font-size: 4.5rem; font-weight: 500; line-height: 1.1; margin-bottom: 20px; letter-spacing: 1px; }
+        .hero-content p { font-size: 1.2rem; margin-bottom: 40px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase;}
+        .btn-solid { display: inline-block; padding: 16px 45px; color: var(--text-dark); background: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; border-radius: 3px;}
+        .btn-solid:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+        /* --- ORIGINAL ARCHITECTURAL INTRO SECTION --- */
+        .intro-section { 
+            padding: 150px 5%; 
+            display: flex; 
+            align-items: center; 
+            gap: 60px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+
+        .intro-graphics { 
+            flex: 1; 
+            position: relative;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Unique Geometric Background Pattern */
+        .hatch-pattern {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 200px;
+            height: 250px;
+            background: repeating-linear-gradient( 45deg, transparent, transparent 2px, var(--accent-color) 2px, var(--accent-color) 4px );
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        /* Image Shape Containers - Redesigned to avoid exact copying */
+        .graphic-img {
+            position: absolute;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .graphic-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6); 
+            transition: transform 0.8s ease;
+        }
+        
+        .graphic-img:hover img { transform: scale(1.08); }
+
+        .tall-arch {
+            width: 320px;
+            height: 550px;
+            border-radius: 160px 160px 0 0; /* Tall narrow arch */
+            left: 50px;
+            top: 0;
+        }
+
+        .floating-circle {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%; /* Perfect circle intersecting the arch */
+            right: 20px;
+            bottom: -40px;
+            z-index: 2;
+        }
+
+        .graphic-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+            width: 80%;
+            pointer-events: none;
+        }
+
+        .graphic-overlay h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+
+        .graphic-overlay p {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 2px;
+            line-height: 1.4;
+        }
+        
+        .intro-text { flex: 1; padding-left: 40px; }
+        .intro-text h2 { font-family: 'Playfair Display', serif; font-size: 3.5rem; line-height: 1.1; margin-bottom: 25px; color: var(--text-dark);}
+        .intro-text p { font-size: 1.05rem; color: var(--text-light); margin-bottom: 20px; line-height: 1.8; font-weight: 300;}
+        .link-text { display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); text-decoration: none;}
+        .link-text span { transition: transform 0.3s; }
+        .link-text:hover span { transform: translateX(5px); }
+
+        /* --- OUR COLLECTION --- */
+        .offerings { padding: 120px 5%; background-color: var(--bg-alt); text-align: center; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 20px;}
+        .section-subtitle { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-light); margin-bottom: 60px; display: block;}
+        
+        .offerings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1400px; margin: 0 auto; }
+        .offering-card { text-align: left; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);}
+        .card-img-wrap { overflow: hidden; height: 350px; margin-bottom: 20px; border-radius: 3px;}
+        .offering-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .offering-card:hover img { transform: scale(1.05); }
+        .offering-card h3 { font-size: 1.3rem; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+        .offering-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 25px; font-weight: 300;}
+        .btn-line { display: inline-block; padding-bottom: 5px; color: var(--text-dark); text-decoration: none; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--text-dark); transition: color 0.3s, border-color 0.3s;}
+        .btn-line:hover { color: #888; border-color: #888;}
+
+        /* --- IMMERSIVE VIDEO --- */
+        .video-banner { position: relative; width: 100%; height: 70vh; display: flex; align-items: center; justify-content: center; }
+        .video-banner img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.7); }
+        .play-btn { width: 90px; height: 90px; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 25px; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.4s; background: rgba(255,255,255,0.1);}
+        .play-btn:hover { transform: scale(1.1); background: #fff; color: var(--text-dark); }
+
+        /* --- CLIENT REVIEWS --- */
+        .testimonials { padding: 120px 5%; text-align: center; }
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 50px; max-width: 1400px; margin: 0 auto; text-align: left;}
+        .test-card { padding: 40px; background: var(--bg-alt); border-radius: 5px;}
+        .star-rating { color: #d4af37; margin-bottom: 20px; font-size: 1.2rem;}
+        .test-card p { font-size: 1.05rem; color: var(--text-light); line-height: 1.8; margin-bottom: 30px; font-style: italic;}
+        .test-card h4 { font-weight: 700; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;}
+        .test-card span { font-size: 0.85rem; color: #888;}
+
+        /* --- RECENT PROJECTS --- */
+        .projects { padding: 0 5% 120px; text-align: center; }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto; }
+        .project-card { position: relative; overflow: hidden; cursor: pointer;}
+        .project-card img { width: 100%; height: 400px; object-fit: cover; transition: transform 0.6s ease; filter: brightness(0.85);}
+        .project-card:hover img { transform: scale(1.05); filter: brightness(0.6);}
+        .project-info { position: absolute; bottom: 30px; left: 30px; color: #fff; text-align: left; z-index: 2; transform: translateY(20px); opacity: 0; transition: all 0.4s ease;}
+        .project-card:hover .project-info { transform: translateY(0); opacity: 1;}
+        .project-info h4 { font-size: 1.5rem; font-family: 'Playfair Display', serif; font-weight: 500;}
+
+        /* --- CERTIFICATIONS --- */
+        .certifications { padding: 60px 5%; background: var(--bg-alt); display: flex; justify-content: center; gap: 60px; flex-wrap: wrap;}
+        .cert-item { text-align: center; }
+        .cert-icon { font-size: 2rem; margin-bottom: 10px; color: var(--text-dark);}
+        .cert-text { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; color: var(--text-light);}
+
+        /* --- FOOTER --- */
+        footer { background-color: var(--text-dark); color: #f4f4f0; }
+        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
+        .footer-col h3 { font-size: 0.9rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
+        .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; filter: invert(1); }
+        .footer-logo img { max-height: 40px; }
+        .footer-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px;}
+        .footer-col p { margin-bottom: 20px; color: #999; font-size: 0.95rem; line-height: 1.8;}
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 15px; }
+        .footer-col ul a { color: #999; text-decoration: none; transition: color 0.3s; font-size: 0.9rem;}
+        .footer-col ul a:hover { color: #fff; }
+        .newsletter-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; margin-bottom: 15px; outline: none; transition: border-color 0.3s;}
+        .newsletter-input:focus { border-color: #fff; }
+        .newsletter-btn { background: #fff; color: var(--text-dark); padding: 16px 20px; border: none; font-weight: 700; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: background 0.3s;}
+        .newsletter-btn:hover { background: var(--accent-color); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #777; flex-wrap: wrap; gap: 15px;}
+
+        /* --- RESPONSIVE MOBILE STYLES --- */
+        @media (max-width: 1024px) { 
+            .intro-section { flex-direction: column; text-align: center; padding: 100px 5%;}
+            .intro-text { padding-left: 0; margin-top: 50px;}
+            .intro-graphics { min-height: auto; width: 100%; justify-content: center; padding-bottom: 50px;}
+            .tall-arch { position: relative; left: 0; }
+            .floating-circle { position: absolute; right: 10%; bottom: 0; }
+            .footer-top { grid-template-columns: 1fr 1fr; } 
+        }
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .logo-text { font-size: 1.1rem; }
+            .logo img { max-height: 35px; }
+            
+            .hamburger { display: flex; }
+            nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background-color: #fff; border-left: 1px solid var(--border-color); box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; padding-top: 90px; }
+            nav.active { right: 0; }
+            nav ul { flex-direction: column; gap: 20px; padding: 0 30px; }
+            nav a { font-size: 1.1rem; display: block; padding: 15px 0; border-bottom: 1px solid var(--border-color);}
+            
+            .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+            .hero-content h1 { font-size: 3rem; }
+            
+            .tall-arch { width: 260px; height: 400px; }
+            .floating-circle { width: 200px; height: 200px; right: 0;}
+            .hatch-pattern { display: none; } 
+            
+            .intro-text h2, .section-title { font-size: 2.5rem; }
+            .footer-top { grid-template-columns: 1fr; text-align: center; padding: 60px 5%;}
+            .footer-logo { justify-content: center; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            <img src="logo.png" alt="Logo">
+            <span class="logo-text">Sambandh Sales</span>
+        </a>
+        <button class="hamburger" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="gallery.html">Products</a></li>
+                <li><a href="visualizer.html">visualizer</a></li>
+                <li><a href="contact.html">Get in Touch</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <img id="hero-slider" src="i26.png" alt="Architectural Pre-Cast Concrete">
+        <div class="hero-content reveal">
+            <p>Sambandh Sales Manufacturing</p>
+            <h1>Redefining Architectural Surfaces.</h1>
+            <a href="visualizer.html" class="btn-solid">Launch Simulator</a>
+        </div>
+    </section>
+
+    <section class="intro-section">
+        <div class="intro-graphics reveal">
+            <div class="hatch-pattern"></div>
+            
+            <div class="graphic-img tall-arch">
+                <img src="i1.png" alt="Pre-Cast Concrete Texture">
+                <div class="graphic-overlay">
+                    <h3>100+</h3>
+                    <p>Design Profiles Crafted</p>
+                </div>
+            </div>
+
+            <div class="graphic-img floating-circle">
+                <img src="i2.png" alt="Manufacturing Plant">
+                <div class="graphic-overlay">
+                    <h3>100K</h3>
+                    <p>Sq.Ft. Fabrication Plant</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="intro-text reveal">
+            <h2>Brutalism, Refined for the Modern Era.</h2>
+            <p>Forget everything you know about traditional concrete. We have taken the raw, industrial power of cement and transformed it into a lightweight, precision-engineered art form.</p>
+            <p>Sambandh Sales strictly manufactures luxury pre-cast concrete wall panels that defy expectations. Molded to perfection in our Vadodara facility, our cladding bridges the gap between structural integrity and avant-garde design.</p>
+            <p>Every panel is 100% fire-retardant and completely impervious to water, offering architects and visionary builders a flawless canvas for both interior accent walls and challenging exterior facades.</p>
+            <a href="about.html" class="link-text">Discover Our Process <span>&#10230;</span></a>
+        </div>
+    </section>
+
+    <section class="offerings">
+        <span class="section-subtitle reveal">Material Hierarchy</span>
+        <h2 class="section-title reveal">The Core Collection</h2>
+        <div class="offerings-grid reveal">
+            <div class="offering-card">
+                <div class="card-img-wrap"><img src="i3.png" alt="Smooth Brutalist Concrete"></div>
+                <h3>Smooth Brutalist</h3>
+                <p>A hyper-refined, sleek surface tailored for contemporary, minimalist environments.</p>
+                <a href="gallery.html" class="btn-line">View Finish</a>
+            </div>
+            <div class="offering-card">
+                <div class="card-img-wrap"><img src="i4.png" alt="Exposed Aggregate"></div>
+                <h3>Exposed Aggregate</h3>
+                <p>Revealing the natural stone and architectural matrix hidden within the concrete mix.</p>
+                <a href="gallery.html" class="btn-line">View Finish</a>
+            </div>
+            <div class="offering-card">
+                <div class="card-img-wrap"><img src="i5.png" alt="Board-Formed Concrete"></div>
+                <h3>Board-Formed</h3>
+                <p>The organic grain of timber, permanently captured in unyielding, fire-proof stone.</p>
+                <a href="gallery.html" class="btn-line">View Finish</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="video-banner reveal">
+        <img src="i28.png" alt="Pre-Cast Installation Video">
+        <div class="play-btn">&#9658;</div>
+    </section>
+
+    <section class="testimonials">
+        <span class="section-subtitle reveal">Industry Feedback</span>
+        <h2 class="section-title reveal">Trusted by Visionaries</h2>
+        <div class="test-grid reveal">
+            <div class="test-card">
+                <div class="star-rating">★★★★★</div>
+                <p>"Sambandh Sales completely transformed our commercial lobby. The board-formed texture is indistinguishable from real wood, but provides the eternal durability and fire rating of stone."</p>
+                <h4>Rohan Desai</h4>
+                <span>Lead Architect, Urban Core</span>
+            </div>
+            <div class="test-card">
+                <div class="star-rating">★★★★★</div>
+                <p>"Finding true waterproof concrete cladding for our exterior facade was a major challenge until we discovered this team. The installation was seamless and the brutalist aesthetic is flawless."</p>
+                <h4>Ananya Sharma</h4>
+                <span>Property Developer</span>
+            </div>
+            <div class="test-card">
+                <div class="star-rating">★★★★★</div>
+                <p>"The smooth pre-cast panels gave my client's studio the exact high-end industrial look I was striving for. Their Vadodara manufacturing team executed our exact specifications."</p>
+                <h4>Vikram Patel</h4>
+                <span>Interior Designer</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects">
+        <div class="projects-grid reveal">
+            <div class="project-card">
+                <img src="i29.png" alt="Project 1">
+                <div class="project-info">
+                    <h4>The Apex Facade</h4>
+                </div>
+            </div>
+            <div class="project-card">
+                <img src="i30.png" alt="Project 2">
+                <div class="project-info">
+                    <h4>Minimalist Haven</h4>
+                </div>
+            </div>
+            <div class="project-card">
+                <img src="i31.png" alt="Project 3">
+                <div class="project-info">
+                    <h4>Corporate Lobby</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="certifications reveal">
+        <div class="cert-item">
+            <div class="cert-icon">🛡️</div>
+            <div class="cert-text">100% Fire Rated</div>
+        </div>
+        <div class="cert-item">
+            <div class="cert-icon">💧</div>
+            <div class="cert-text">Water Impervious</div>
+        </div>
+        <div class="cert-item">
+            <div class="cert-icon">🏅</div>
+            <div class="cert-text">ISO 9001:2015</div>
+        </div>
+        <div class="cert-item">
+            <div class="cert-icon">⚙️</div>
+            <div class="cert-text">Zero Maintenance</div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-top">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="logo.png" alt="Logo">
+                    <span>Sambandh Sales</span>
+                </div>
+                <p>Specialized pre-cast concrete engineering for interior design and exterior facades. Crafted for the modern architectural landscape.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Our Collections</h3>
+                <ul>
+                    <li><a href="gallery.html">Smooth Brutalist</a></li>
+                    <li><a href="gallery.html">Exposed Aggregate</a></li>
+                    <li><a href="gallery.html">Board-Formed</a></li>
+                    <li><a href="visualizer.html">3D Environment</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact Desk</h3>
+                <ul>
+                    <li>Vadodara, Gujarat</li>
+                    <li>India</li>
+                    <li style="margin-top: 15px; margin-bottom: 5px;">Project Inquiries:</li>
+                    <li><a href="mailto:info@sambandhsales.com" style="color: #fff;">info@sambandhsales.com</a></li>
+                    <li>+91 XXXXX XXXXX</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Architectural Newsletter</h3>
+                <form action="#">
+                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">Stay updated on new texture releases and material innovations.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 Sambandh Sales. All Rights Reserved.</div>
+            <div>Designed & Developed by Vishwakarma Cyber Technologies</div>
+        </div>
+    </footer>
+
+    <script>
+        // Hero Slider
+        const sliderImg = document.getElementById('hero-slider');
+        let currentImageIndex = 26;
+        const maxImageIndex = 46;
+
+        setInterval(() => {
+            currentImageIndex++;
+            if (currentImageIndex > maxImageIndex) currentImageIndex = 26;
+            sliderImg.style.opacity = 0; 
+            setTimeout(() => {
+                sliderImg.src = `i${currentImageIndex}.png`;
+                sliderImg.style.opacity = 1; 
+            }, 600);
+        }, 5000);
+
+        // Mobile Hamburger Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('nav');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+
+        // Scroll Reveal Animation Script
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100; // when to trigger animation
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        // Trigger once on load, then on scroll
+        window.addEventListener("scroll", reveal);
+        reveal();
+    </script>
+</body>
+</html>
