@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Visualizer | Sambandh Sales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+
+    <style>
+        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --accent-color: #d1c8c1; --border-color: #e5e5e5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+
+        /* HEADER & NAVIGATION */
+        header { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 15px; z-index: 1001; text-decoration: none;}
+        .logo img { max-height: 45px; width: auto; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        nav ul { list-style: none; display: flex; gap: 40px; }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; position: relative; }
+        nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
+        nav a:hover::after { width: 100%; }
+
+        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 1001; }
+        .hamburger span { display: block; width: 30px; height: 2px; background-color: var(--text-dark); transition: all 0.3s ease-in-out; }
+
+        /* PAGE HEADER */
+        .page-header { padding: 120px 5% 80px; text-align: center; background-color: var(--bg-alt);}
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 4rem; text-transform: uppercase; font-weight: 700; line-height: 1.1; margin-bottom: 20px; letter-spacing: 1px;}
+        .page-header p { font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; letter-spacing: 1px;}
+
+        /* VISUALIZER LAYOUT */
+        .visualizer-container { display: flex; padding: 100px 5%; max-width: 1500px; margin: 0 auto; gap: 60px; min-height: 70vh; }
+        .controls { width: 350px; display: flex; flex-direction: column; gap: 40px; flex-shrink: 0; padding-right: 20px; border-right: 1px solid var(--border-color);}
+        
+        /* THE 3D CANVAS AREA */
+        .view-area { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 3px; min-height: 600px; background: radial-gradient(circle at center, #ffffff 0%, #e0e0e0 100%); cursor: grab;}
+        .view-area:active { cursor: grabbing; }
+        #canvas-container { width: 100%; height: 100%; display: block; position: absolute; top:0; left:0;}
+        
+        .ui-overlay { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); padding: 10px 20px; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; pointer-events: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); color: var(--text-dark);}
+
+        .control-group h3 { margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-dark);}
+        button.option-btn { width: 100%; padding: 16px; margin-bottom: 12px; background: transparent; border: 1px solid var(--border-color); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s; text-align: left; padding-left: 25px; color: var(--text-light);}
+        button.option-btn:hover { border-color: var(--text-dark); }
+        button.option-btn.active { background: var(--text-dark); color: #fff; border-color: var(--text-dark); }
+        
+        .color-picker-wrap { width: 100%; height: 60px; border: 1px solid var(--border-color); padding: 5px; cursor: pointer; transition: border-color 0.3s;}
+        .color-picker-wrap:hover { border-color: var(--text-dark); }
+        .color-picker-wrap input { width: 100%; height: 100%; border: none; cursor: pointer; padding: 0;}
+
+        /* FOOTER */
+        footer { background-color: var(--text-dark); color: #f4f4f0; }
+        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
+        .footer-col h3 { font-size: 0.9rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
+        .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; filter: invert(1); }
+        .footer-logo img { max-height: 40px; }
+        .footer-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px;}
+        .footer-col p { margin-bottom: 20px; color: #999; font-size: 0.95rem; line-height: 1.8;}
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 15px; }
+        .footer-col ul a { color: #999; text-decoration: none; transition: color 0.3s; font-size: 0.9rem;}
+        .footer-col ul a:hover { color: #fff; }
+        .newsletter-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; margin-bottom: 15px; outline: none; transition: border-color 0.3s;}
+        .newsletter-input:focus { border-color: #fff; }
+        .newsletter-btn { background: #fff; color: var(--text-dark); padding: 16px 20px; border: none; font-weight: 700; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: background 0.3s;}
+        .newsletter-btn:hover { background: var(--accent-color); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #777; flex-wrap: wrap; gap: 15px;}
+
+        /* RESPONSIVE */
+        @media (max-width: 1000px) { .visualizer-container { flex-direction: column; } .controls { width: 100%; border-right: none; padding-right: 0;} .footer-top { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .logo-text { font-size: 1.1rem; }
+            .logo img { max-height: 35px; }
+            .hamburger { display: flex; }
+            nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background-color: #fff; border-left: 1px solid var(--border-color); box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; padding-top: 90px; }
+            nav.active { right: 0; }
+            nav ul { flex-direction: column; gap: 20px; padding: 0 30px; }
+            nav a { font-size: 1.1rem; display: block; padding: 15px 0; border-bottom: 1px solid var(--border-color);}
+            .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            .page-header h1 { font-size: 2.8rem; }
+            .view-area { min-height: 400px; }
+            .footer-top { grid-template-columns: 1fr; text-align: center; padding: 60px 5%;}
+            .footer-logo { justify-content: center; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            <img src="logo.png" alt="Logo">
+            <span class="logo-text">Sambandh Sales</span>
+        </a>
+        <button class="hamburger" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="gallery.html">Products</a></li>
+                <li><a href="visualizer.html">visualizer</a></li>
+                <li><a href="contact.html">Get in Touch</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>Concrete Simulator</h1>
+        <p>Interact with our true 3D pre-cast panels in real-time.</p>
+    </div>
+
+    <section class="visualizer-container">
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>Environment Focus</h3>
+                <button class="option-btn active" onclick="changeLighting('interior', this)">Interior Feature Wall</button>
+                <button class="option-btn" onclick="changeLighting('exterior', this)">Exterior Facade</button>
+            </div>
+            <div class="control-group">
+                <h3>Material Finish</h3>
+                <button class="option-btn active" onclick="changeFinish('smooth', this)">Smooth Brutalist</button>
+                <button class="option-btn" onclick="changeFinish('exposed', this)">Exposed Aggregate</button>
+                <button class="option-btn" onclick="changeFinish('polished', this)">Polished Texture</button>
+            </div>
+            <div class="control-group">
+                <h3>Custom Mix Tint</h3>
+                <div class="color-picker-wrap">
+                    <input type="color" id="panel-color" value="#a3a3a3">
+                </div>
+            </div>
+        </div>
+
+        <div class="view-area">
+            <div id="canvas-container"></div>
+            
+            <div class="ui-overlay">
+                Drag to Rotate • Scroll to Zoom
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-top">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="logo.png" alt="Logo">
+                    <span>Sambandh Sales</span>
+                </div>
+                <p>Specialized pre-cast concrete engineering for interior design and exterior facades. Crafted for the modern architectural landscape.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Our Collections</h3>
+                <ul>
+                    <li><a href="gallery.html">Smooth Brutalist</a></li>
+                    <li><a href="gallery.html">Exposed Aggregate</a></li>
+                    <li><a href="gallery.html">Board-Formed</a></li>
+                    <li><a href="visualizer.html">3D Environment</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact Desk</h3>
+                <ul>
+                    <li>Vadodara, Gujarat</li>
+                    <li>India</li>
+                    <li style="margin-top: 15px; margin-bottom: 5px;">Project Inquiries:</li>
+                    <li><a href="mailto:info@sambandhsales.com" style="color: #fff;">info@sambandhsales.com</a></li>
+                    <li>+91 XXXXX XXXXX</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Architectural Newsletter</h3>
+                <form action="#">
+                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">Stay updated on new texture releases and material innovations.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 Sambandh Sales. All Rights Reserved.</div>
+            <div>Designed & Developed by Vishwakarma Cyber Technologies</div>
+        </div>
+    </footer>
+
+    <script>
+        // Hamburger Menu Logic
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('nav');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+
+        // --- THREE.JS SETUP ---
+        const container = document.getElementById('canvas-container');
+
+        // 1. Scene
+        const scene = new THREE.Scene();
+
+        // 2. Renderer with High-End Lighting Settings
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        // We set the size slightly delayed to ensure the flexbox layout has finished rendering
+        setTimeout(() => {
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }, 100);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; 
+        renderer.toneMappingExposure = 1.0;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // 3. Camera
+        const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+        camera.position.set(4, 3, 6);
+
+        // 4. Mouse Controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05; 
+        controls.minDistance = 2;
+        controls.maxDistance = 12;
+        controls.maxPolarAngle = Math.PI / 2 + 0.1; 
+        controls.autoRotate = true; // Spins automatically to prove it's 3D
+        controls.autoRotateSpeed = 2.0;
+
+        // Stop auto-rotate if the user clicks/touches the canvas
+        container.addEventListener('mousedown', () => { controls.autoRotate = false; });
+        container.addEventListener('touchstart', () => { controls.autoRotate = false; });
+
+        // 5. Lighting (Studio Room Environment)
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        const roomEnvironment = new THREE.RoomEnvironment();
+        scene.environment = pmremGenerator.fromScene(roomEnvironment).texture;
+        
+        // Directional light for deep shadows
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(5, 10, 5);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        scene.add(dirLight);
+
+        // 6. The Concrete Material (MeshPhysicalMaterial)
+        const concreteMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0xa3a3a3,
+            roughness: 0.9,      
+            metalness: 0.0,      
+            clearcoat: 0.0,      
+            clearcoatRoughness: 0.0,
+        });
+
+        // 7. Construct a 3D Fluted Wall Panel
+        const panelGroup = new THREE.Group();
+
+        // Flat backing slab
+        const baseGeo = new THREE.BoxGeometry(2, 3, 0.1);
+        const baseMesh = new THREE.Mesh(baseGeo, concreteMaterial);
+        baseMesh.castShadow = true;
+        baseMesh.receiveShadow = true;
+        panelGroup.add(baseMesh);
+
+        // Architectural fluted ridges
+        const ribGeo = new THREE.CylinderGeometry(0.06, 0.06, 3, 16);
+        for(let i = 0; i < 15; i++) {
+            const rib = new THREE.Mesh(ribGeo, concreteMaterial);
+            rib.position.set(-0.84 + (i * 0.12), 0, 0.05); 
+            rib.castShadow = true;
+            rib.receiveShadow = true;
+            panelGroup.add(rib);
+        }
+
+        panelGroup.position.y = 1.5; 
+        scene.add(panelGroup);
+
+        // 8. The Floor (To catch realistic shadows)
+        const floorGeo = new THREE.PlaneGeometry(50, 50);
+        const floorMat = new THREE.MeshStandardMaterial({ 
+            color: 0xffffff, 
+            roughness: 1, 
+            metalness: 0 
+        });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // 9. Handle Browser Resizing
+        window.addEventListener('resize', () => {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+        
+        // Initial resize trigger to fix initial aspect ratio
+        setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 150);
+
+        // 10. Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); 
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- BUTTON INTERACTIVITY ---
+
+        // Change Lighting (Interior vs Exterior)
+        function changeLighting(type, btn) {
+            document.querySelectorAll('.control-group:nth-child(1) .option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (type === 'interior') {
+                dirLight.intensity = 1.2; // Soft studio
+                dirLight.position.set(5, 10, 5);
+                renderer.toneMappingExposure = 1.0;
+            } else if (type === 'exterior') {
+                dirLight.intensity = 2.5; // Harsh sun
+                dirLight.position.set(-10, 15, 10);
+                renderer.toneMappingExposure = 1.3;
+            }
+        }
+
+        // Change Material Roughness (Smooth vs Exposed vs Polished)
+        function changeFinish(type, btn) {
+            document.querySelectorAll('.control-group:nth-child(2) .option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (type === 'smooth') {
+                concreteMaterial.roughness = 0.9;
+                concreteMaterial.clearcoat = 0.0;
+            } else if (type === 'exposed') {
+                concreteMaterial.roughness = 1.0;
+                concreteMaterial.clearcoat = 0.0;
+            } else if (type === 'polished') {
+                concreteMaterial.roughness = 0.1;
+                concreteMaterial.clearcoat = 1.0;
+                concreteMaterial.clearcoatRoughness = 0.1;
+            }
+            concreteMaterial.needsUpdate = true;
+        }
+
+        // Color Picker Logic
+        const colorPicker = document.getElementById('panel-color');
+        colorPicker.addEventListener('input', function(e) {
+            concreteMaterial.color.set(e.target.value);
+        });
+    </script>
+</body>
+</html>

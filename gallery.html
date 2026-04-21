@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products | Sambandh Sales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --accent-color: #d1c8c1; --border-color: #e5e5e5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+
+        /* FADE IN ANIMATION */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* HEADER & NAVIGATION */
+        header { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 15px; z-index: 1001; text-decoration: none;}
+        .logo img { max-height: 45px; width: auto; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        nav ul { list-style: none; display: flex; gap: 40px; }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; position: relative; }
+        nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
+        nav a:hover::after { width: 100%; }
+
+        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 1001; }
+        .hamburger span { display: block; width: 30px; height: 2px; background-color: var(--text-dark); transition: all 0.3s ease-in-out; }
+
+        /* PAGE HEADER */
+        .page-header { padding: 120px 5% 80px; text-align: center; background-color: var(--bg-alt);}
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 4rem; text-transform: uppercase; font-weight: 700; line-height: 1.1; margin-bottom: 20px; letter-spacing: 1px;}
+        .page-header p { font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; letter-spacing: 1px;}
+
+        /* TRUE MASONRY GALLERY SYSTEM */
+        .full-gallery { 
+            padding: 100px 5%; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            column-count: 3; 
+            column-gap: 40px; 
+        }
+        
+        .gallery-item { 
+            break-inside: avoid; 
+            margin-bottom: 40px; 
+            border-radius: 3px; 
+            position: relative; 
+            background: #000; 
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .gallery-item img { 
+            width: 100%; 
+            display: block; 
+            height: auto; 
+            transition: transform 0.8s ease, opacity 0.5s ease; 
+            opacity: 0.95;
+        }
+        
+        .gallery-item:hover img { 
+            transform: scale(1.05); 
+            opacity: 0.6;
+        }
+
+        .gallery-overlay { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            color: #fff; 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.5rem; 
+            font-weight: 500; 
+            opacity: 0; 
+            transition: opacity 0.5s ease; 
+            pointer-events: none;
+            text-align: center;
+        }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+        /* FOOTER */
+        footer { background-color: var(--text-dark); color: #f4f4f0; }
+        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
+        .footer-col h3 { font-size: 0.9rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
+        .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; filter: invert(1); }
+        .footer-logo img { max-height: 40px; }
+        .footer-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px;}
+        .footer-col p { margin-bottom: 20px; color: #999; font-size: 0.95rem; line-height: 1.8;}
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 15px; }
+        .footer-col ul a { color: #999; text-decoration: none; transition: color 0.3s; font-size: 0.9rem;}
+        .footer-col ul a:hover { color: #fff; }
+        .newsletter-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; margin-bottom: 15px; outline: none; transition: border-color 0.3s;}
+        .newsletter-input:focus { border-color: #fff; }
+        .newsletter-btn { background: #fff; color: var(--text-dark); padding: 16px 20px; border: none; font-weight: 700; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: background 0.3s;}
+        .newsletter-btn:hover { background: var(--accent-color); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #777; flex-wrap: wrap; gap: 15px;}
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) { .full-gallery { column-count: 2; } }
+        @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .logo-text { font-size: 1.1rem; }
+            .logo img { max-height: 35px; }
+            .hamburger { display: flex; }
+            nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background-color: #fff; border-left: 1px solid var(--border-color); box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; padding-top: 90px; }
+            nav.active { right: 0; }
+            nav ul { flex-direction: column; gap: 20px; padding: 0 30px; }
+            nav a { font-size: 1.1rem; display: block; padding: 15px 0; border-bottom: 1px solid var(--border-color);}
+            .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            
+            .page-header h1 { font-size: 2.8rem; }
+            .full-gallery { column-count: 1; padding: 60px 5%; gap: 0;}
+            .footer-top { grid-template-columns: 1fr; text-align: center; padding: 60px 5%;}
+            .footer-logo { justify-content: center; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            <img src="logo.png" alt="Logo">
+            <span class="logo-text">Sambandh Sales</span>
+        </a>
+        <button class="hamburger" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="gallery.html">Products</a></li>
+                <li><a href="visualizer.html">visualizer</a></li>
+                <li><a href="contact.html">Get in Touch</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1 class="reveal">Concrete Collection</h1>
+        <p class="reveal">Explore our complete portfolio of pre-cast architectural panels.</p>
+    </div>
+
+    <section class="full-gallery reveal" id="gallery-container">
+    </section>
+
+    <footer>
+        <div class="footer-top">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="logo.png" alt="Logo">
+                    <span>Sambandh Sales</span>
+                </div>
+                <p>Specialized pre-cast concrete engineering for interior design and exterior facades. Crafted for the modern architectural landscape.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Our Collections</h3>
+                <ul>
+                    <li><a href="gallery.html">Smooth Brutalist</a></li>
+                    <li><a href="gallery.html">Exposed Aggregate</a></li>
+                    <li><a href="gallery.html">Board-Formed</a></li>
+                    <li><a href="visualizer.html">3D Environment</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact Desk</h3>
+                <ul>
+                    <li>Vadodara, Gujarat</li>
+                    <li>India</li>
+                    <li style="margin-top: 15px; margin-bottom: 5px;">Project Inquiries:</li>
+                    <li><a href="mailto:info@sambandhsales.com" style="color: #fff;">info@sambandhsales.com</a></li>
+                    <li>+91 XXXXX XXXXX</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Architectural Newsletter</h3>
+                <form action="#">
+                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">Stay updated on new texture releases and material innovations.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 Sambandh Sales. All Rights Reserved.</div>
+            <div>Designed & Developed by Vishwakarma Cyber Technologies</div>
+        </div>
+    </footer>
+
+    <script>
+        const galleryContainer = document.getElementById('gallery-container');
+        
+        // 1. Create an array containing numbers 1 through 46
+        let imageNumbers = [];
+        for (let i = 1; i <= 46; i++) {
+            imageNumbers.push(i);
+        }
+
+        // 2. Shuffle the array randomly (Fisher-Yates Shuffle Algorithm)
+        for (let i = imageNumbers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [imageNumbers[i], imageNumbers[j]] = [imageNumbers[j], imageNumbers[i]];
+        }
+        
+        // 3. Loop through the newly shuffled array to create the images
+        imageNumbers.forEach((num, index) => {
+            const div = document.createElement('div');
+            div.className = 'gallery-item reveal';
+            
+            // Stagger the fade-in animation slightly based on its loaded order
+            div.style.transitionDelay = `${(index % 5) * 0.1}s`;
+            
+            const img = document.createElement('img');
+            img.src = `i${num}.png`;
+            img.alt = `Pre-Cast Concrete Panel Design ${num}`;
+            img.loading = "lazy"; 
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'gallery-overlay';
+            overlay.textContent = 'View Detail';
+
+            div.appendChild(img);
+            div.appendChild(overlay);
+            galleryContainer.appendChild(div);
+        });
+
+        // Mobile Nav Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('nav');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+
+        // Scroll Reveal Animation Script
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 50; 
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        setTimeout(reveal, 100); 
+    </script>
+</body>
+</html>
