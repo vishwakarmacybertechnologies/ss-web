@@ -3,93 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Visualizer | Sambandh Sales</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    <title>3D Pro Configurator | Sambandh Sales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
 
     <style>
-        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --accent-color: #d1c8c1; --border-color: #e5e5e5; }
+        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --border-color: #e5e5e5; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); overflow: hidden; }
 
-        /* HEADER & NAVIGATION */
-        header { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 1000; }
-        .logo { display: flex; align-items: center; gap: 15px; z-index: 1001; text-decoration: none;}
+        /* RESTORED PREMIUM HEADER */
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: #fff; height: 85px; z-index: 1000; position: relative;}
+        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
         .logo img { max-height: 45px; width: auto; }
-        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
-        nav ul { list-style: none; display: flex; gap: 40px; }
-        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; position: relative; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        nav ul { list-style: none; display: flex; gap: 35px; }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s; position: relative;}
         nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
         nav a:hover::after { width: 100%; }
-
-        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 1001; }
-        .hamburger span { display: block; width: 30px; height: 2px; background-color: var(--text-dark); transition: all 0.3s ease-in-out; }
-
-        /* PAGE HEADER */
-        .page-header { padding: 120px 5% 80px; text-align: center; background-color: var(--bg-alt);}
-        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 4rem; text-transform: uppercase; font-weight: 700; line-height: 1.1; margin-bottom: 20px; letter-spacing: 1px;}
-        .page-header p { font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; letter-spacing: 1px;}
-
-        /* VISUALIZER LAYOUT */
-        .visualizer-container { display: flex; padding: 100px 5%; max-width: 1500px; margin: 0 auto; gap: 60px; min-height: 70vh; }
-        .controls { width: 350px; display: flex; flex-direction: column; gap: 40px; flex-shrink: 0; padding-right: 20px; border-right: 1px solid var(--border-color);}
         
-        /* THE 3D CANVAS AREA */
-        .view-area { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 3px; min-height: 600px; background: radial-gradient(circle at center, #ffffff 0%, #e0e0e0 100%); cursor: grab;}
+        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; }
+        .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
+
+        /* APP LAYOUT */
+        .app-container { display: flex; height: calc(100vh - 85px); width: 100%; background: var(--bg-alt); }
+        
+        /* 3D CANVAS AREA */
+        .view-area { flex-grow: 1; position: relative; background: radial-gradient(circle at center, #ffffff 0%, #e8e8e8 100%); cursor: grab; height: 100%; }
         .view-area:active { cursor: grabbing; }
-        #canvas-container { width: 100%; height: 100%; display: block; position: absolute; top:0; left:0;}
+        #canvas-container { width: 100%; height: 100%; display: block; }
         
-        .ui-overlay { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); padding: 10px 20px; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; pointer-events: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); color: var(--text-dark);}
+        .ui-overlay { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.85); backdrop-filter: blur(5px); padding: 8px 16px; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; pointer-events: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        .control-group h3 { margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-dark);}
-        button.option-btn { width: 100%; padding: 16px; margin-bottom: 12px; background: transparent; border: 1px solid var(--border-color); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s; text-align: left; padding-left: 25px; color: var(--text-light);}
-        button.option-btn:hover { border-color: var(--text-dark); }
+        /* CONTROLS SIDEBAR */
+        .controls-panel { width: 450px; background: #fff; border-left: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100%; flex-shrink: 0; box-shadow: -5px 0 20px rgba(0,0,0,0.03); z-index: 10; }
+        
+        .panel-header { padding: 30px 30px 10px; }
+        .panel-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 5px; }
+        .panel-header p { font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* CUSTOM TABS */
+        .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 30px; margin-top: 20px; }
+        .tab-btn { flex: 1; background: transparent; border: none; padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .tab-btn.active { color: var(--text-dark); border-bottom-color: var(--text-dark); }
+
+        .tab-content { padding: 30px; overflow-y: auto; flex-grow: 1; display: none; }
+        .tab-content.active { display: block; }
+
+        /* CONTROL BUTTONS */
+        .control-block { margin-bottom: 30px; }
+        .control-block h3 { margin-bottom: 15px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-light); font-weight: 700;}
+        button.option-btn { width: 100%; padding: 16px 20px; margin-bottom: 12px; background: var(--bg-alt); border: 1px solid var(--border-color); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; text-align: left; display: flex; justify-content: space-between; align-items: center; border-radius: 4px;}
+        button.option-btn:hover { border-color: #bbb; }
         button.option-btn.active { background: var(--text-dark); color: #fff; border-color: var(--text-dark); }
-        
-        .color-picker-wrap { width: 100%; height: 60px; border: 1px solid var(--border-color); padding: 5px; cursor: pointer; transition: border-color 0.3s;}
-        .color-picker-wrap:hover { border-color: var(--text-dark); }
-        .color-picker-wrap input { width: 100%; height: 100%; border: none; cursor: pointer; padding: 0;}
 
-        /* FOOTER */
-        footer { background-color: var(--text-dark); color: #f4f4f0; }
-        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
-        .footer-col h3 { font-size: 0.9rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
-        .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; filter: invert(1); }
-        .footer-logo img { max-height: 40px; }
-        .footer-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px;}
-        .footer-col p { margin-bottom: 20px; color: #999; font-size: 0.95rem; line-height: 1.8;}
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 15px; }
-        .footer-col ul a { color: #999; text-decoration: none; transition: color 0.3s; font-size: 0.9rem;}
-        .footer-col ul a:hover { color: #fff; }
-        .newsletter-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; margin-bottom: 15px; outline: none; transition: border-color 0.3s;}
-        .newsletter-input:focus { border-color: #fff; }
-        .newsletter-btn { background: #fff; color: var(--text-dark); padding: 16px 20px; border: none; font-weight: 700; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: background 0.3s;}
-        .newsletter-btn:hover { background: var(--accent-color); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #777; flex-wrap: wrap; gap: 15px;}
+        /* PROFESSIONAL COLOR DIAL */
+        .mixer-container { background: var(--bg-alt); padding: 20px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; }
+        .mixer-preview { width: 100%; height: 50px; border-radius: 4px; background-color: #a3a3a3; margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 2px;}
+        #color-dial { display: flex; justify-content: center; margin-bottom: 15px;}
 
-        /* RESPONSIVE */
-        @media (max-width: 1000px) { .visualizer-container { flex-direction: column; } .controls { width: 100%; border-right: none; padding-right: 0;} .footer-top { grid-template-columns: 1fr 1fr; } }
+        /* LOADING OVERLAY */
+        #loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.5rem; transition: opacity 0.5s; pointer-events: none;}
+        .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--text-dark); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-top: 15px;}
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* MOBILE RESPONSIVENESS */
+        @media (max-width: 900px) {
+            body { overflow: hidden; } 
+            .app-container { flex-direction: column; }
+            .view-area { height: 45%; flex-grow: 0; width: 100%; }
+            .controls-panel { height: 55%; width: 100%; border-left: none; border-top: 1px solid var(--border-color); box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+            .panel-header { padding: 20px 20px 0; }
+            .panel-header h1 { font-size: 1.5rem; }
+            .tabs { padding: 0 20px; margin-top: 15px; }
+            .tab-btn { padding: 10px 0; font-size: 0.75rem; }
+            .tab-content { padding: 20px; }
+        }
         @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            .logo-text { font-size: 1.1rem; }
+            header { height: 80px; }
+            .logo-text { font-size: 1rem; }
             .logo img { max-height: 35px; }
             .hamburger { display: flex; }
-            nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background-color: #fff; border-left: 1px solid var(--border-color); box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; padding-top: 90px; }
-            nav.active { right: 0; }
-            nav ul { flex-direction: column; gap: 20px; padding: 0 30px; }
-            nav a { font-size: 1.1rem; display: block; padding: 15px 0; border-bottom: 1px solid var(--border-color);}
-            .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-            .hamburger.active span:nth-child(2) { opacity: 0; }
-            .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-            .page-header h1 { font-size: 2.8rem; }
-            .view-area { min-height: 400px; }
-            .footer-top { grid-template-columns: 1fr; text-align: center; padding: 60px 5%;}
-            .footer-logo { justify-content: center; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+            nav { position: fixed; top: 80px; left: -100%; width: 100%; height: calc(100vh - 80px); background-color: #fff; transition: left 0.3s ease; padding: 40px 20px; z-index: 999; border-top: 1px solid var(--border-color); }
+            nav.active { left: 0; }
+            nav ul { flex-direction: column; gap: 20px; }
+            nav a { font-size: 1.2rem; display: block; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+            .app-container { height: calc(100vh - 80px); }
         }
     </style>
 </head>
@@ -97,7 +103,7 @@
 
     <header>
         <a href="index.html" class="logo">
-            <img src="logo.png" alt="Logo">
+            <img src="logo.png" alt="Sambandh Sales Logo">
             <span class="logo-text">Sambandh Sales</span>
         </a>
         <button class="hamburger" aria-label="Toggle navigation">
@@ -110,93 +116,85 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="gallery.html">Products</a></li>
-                <li><a href="visualizer.html">visualizer</a></li>
+                <li><a href="visualizer.html">Visualizer</a></li>
                 <li><a href="contact.html">Get in Touch</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="page-header">
-        <h1>Concrete Simulator</h1>
-        <p>Interact with our true 3D pre-cast panels in real-time.</p>
+    <div class="app-container">
+        
+        <div class="view-area">
+            <div id="loader">Loading Geometry...<div class="spinner"></div></div>
+            <div id="canvas-container"></div>
+            <div class="ui-overlay">Rotate • Zoom</div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="panel-header">
+                <h1>Configurator</h1>
+                <p>Interactive 3D Engine</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('tab-finish', this)">Design</button>
+                <button class="tab-btn" onclick="openTab('tab-color', this)">Dye Dial</button>
+                <button class="tab-btn" onclick="openTab('tab-light', this)">Lighting</button>
+            </div>
+
+            <div id="tab-finish" class="tab-content active">
+                
+                <div class="control-block">
+                    <h3>1. Panel Profile (3D Shape)</h3>
+                    <button class="option-btn active" id="btn-custom" onclick="changeShape('custom', this)">
+                        <span>DFG Pattern</span> <span style="font-size:0.65rem; opacity:0.6;">CUSTOM .GLB</span>
+                    </button>
+                    <button class="option-btn" id="btn-diamond" onclick="changeShape('diamond', this)">
+                        <span>Geometric Diamond</span> <span style="font-size:0.65rem; opacity:0.6;">ALGORITHM</span>
+                    </button>
+                    <button class="option-btn" id="btn-fluted" onclick="changeShape('fluted', this)">
+                        <span>Fluted Series</span> <span style="font-size:0.65rem; opacity:0.6;">RIBBED</span>
+                    </button>
+                </div>
+
+                <div class="control-block" style="border-top: 1px solid var(--border-color); padding-top: 30px;">
+                    <h3>2. Surface Physics (Texture)</h3>
+                    <button class="option-btn active" onclick="changeMaterial('matte', this)">
+                        <span>Raw Brutalist</span> <span style="font-size:0.65rem; opacity:0.6;">MATTE</span>
+                    </button>
+                    <button class="option-btn" onclick="changeMaterial('polished', this)">
+                        <span>Sealed & Polished</span> <span style="font-size:0.65rem; opacity:0.6;">GLOSS</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="tab-color" class="tab-content">
+                <div class="control-block">
+                    <h3>Custom Pigment Infusion</h3>
+                    <div class="mixer-container">
+                        <div class="mixer-preview" id="mixer-preview">#A3A3A3</div>
+                        <div id="color-dial"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-light" class="tab-content">
+                <div class="control-block">
+                    <h3>Environment Simulator</h3>
+                    <button class="option-btn active" onclick="changeLighting('interior', this)">
+                        <span>Soft Studio</span> <span style="font-size:0.65rem; opacity:0.6;">INTERIOR</span>
+                    </button>
+                    <button class="option-btn" onclick="changeLighting('exterior', this)">
+                        <span>Harsh Sunlight</span> <span style="font-size:0.65rem; opacity:0.6;">EXTERIOR</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <section class="visualizer-container">
-        
-        <div class="controls">
-            <div class="control-group">
-                <h3>Environment Focus</h3>
-                <button class="option-btn active" onclick="changeLighting('interior', this)">Interior Feature Wall</button>
-                <button class="option-btn" onclick="changeLighting('exterior', this)">Exterior Facade</button>
-            </div>
-            <div class="control-group">
-                <h3>Material Finish</h3>
-                <button class="option-btn active" onclick="changeFinish('smooth', this)">Smooth Brutalist</button>
-                <button class="option-btn" onclick="changeFinish('exposed', this)">Exposed Aggregate</button>
-                <button class="option-btn" onclick="changeFinish('polished', this)">Polished Texture</button>
-            </div>
-            <div class="control-group">
-                <h3>Custom Mix Tint</h3>
-                <div class="color-picker-wrap">
-                    <input type="color" id="panel-color" value="#a3a3a3">
-                </div>
-            </div>
-        </div>
-
-        <div class="view-area">
-            <div id="canvas-container"></div>
-            
-            <div class="ui-overlay">
-                Drag to Rotate • Scroll to Zoom
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="footer-top">
-            <div class="footer-col">
-                <div class="footer-logo">
-                    <img src="logo.png" alt="Logo">
-                    <span>Sambandh Sales</span>
-                </div>
-                <p>Specialized pre-cast concrete engineering for interior design and exterior facades. Crafted for the modern architectural landscape.</p>
-            </div>
-            <div class="footer-col">
-                <h3>Our Collections</h3>
-                <ul>
-                    <li><a href="gallery.html">Smooth Brutalist</a></li>
-                    <li><a href="gallery.html">Exposed Aggregate</a></li>
-                    <li><a href="gallery.html">Board-Formed</a></li>
-                    <li><a href="visualizer.html">3D Environment</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Contact Desk</h3>
-                <ul>
-                    <li>Vadodara, Gujarat</li>
-                    <li>India</li>
-                    <li style="margin-top: 15px; margin-bottom: 5px;">Project Inquiries:</li>
-                    <li><a href="mailto:info@sambandhsales.com" style="color: #fff;">info@sambandhsales.com</a></li>
-                    <li>+91 XXXXX XXXXX</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Architectural Newsletter</h3>
-                <form action="#">
-                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
-                    <button type="submit" class="newsletter-btn">Subscribe</button>
-                </form>
-                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">Stay updated on new texture releases and material innovations.</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div>&copy; 2026 Sambandh Sales. All Rights Reserved.</div>
-            <div>Designed & Developed by Vishwakarma Cyber Technologies</div>
-        </div>
-    </footer>
-
     <script>
-        // Hamburger Menu Logic
+        // Hamburger Menu
         const hamburger = document.querySelector('.hamburger');
         const nav = document.querySelector('nav');
         hamburger.addEventListener('click', () => {
@@ -204,18 +202,22 @@
             nav.classList.toggle('active');
         });
 
-        // --- THREE.JS SETUP ---
-        const container = document.getElementById('canvas-container');
+        // Tab Switching
+        function openTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            if(tabId === 'tab-color') { window.dispatchEvent(new Event('resize')); }
+        }
 
-        // 1. Scene
+        // --- 3D ENGINE SETUP ---
+        const container = document.getElementById('canvas-container');
+        const loader = document.getElementById('loader');
         const scene = new THREE.Scene();
 
-        // 2. Renderer with High-End Lighting Settings
+        // Renderer
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        // We set the size slightly delayed to ensure the flexbox layout has finished rendering
-        setTimeout(() => {
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        }, 100);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.toneMapping = THREE.ACESFilmicToneMapping; 
         renderer.toneMappingExposure = 1.0;
@@ -223,94 +225,220 @@
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        // 3. Camera
+        // Camera & Controls
         const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-        camera.position.set(4, 3, 6);
+        camera.position.set(3, 2, 5); 
 
-        // 4. Mouse Controls
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05; 
-        controls.minDistance = 2;
+        controls.minDistance = 1;
         controls.maxDistance = 12;
         controls.maxPolarAngle = Math.PI / 2 + 0.1; 
-        controls.autoRotate = true; // Spins automatically to prove it's 3D
-        controls.autoRotateSpeed = 2.0;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 1.5;
 
-        // Stop auto-rotate if the user clicks/touches the canvas
         container.addEventListener('mousedown', () => { controls.autoRotate = false; });
         container.addEventListener('touchstart', () => { controls.autoRotate = false; });
 
-        // 5. Lighting (Studio Room Environment)
+        // Lighting
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
         const roomEnvironment = new THREE.RoomEnvironment();
         scene.environment = pmremGenerator.fromScene(roomEnvironment).texture;
         
-        // Directional light for deep shadows
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
         dirLight.position.set(5, 10, 5);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width = 2048;
         dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.bias = -0.0005; 
         scene.add(dirLight);
 
-        // 6. The Concrete Material (MeshPhysicalMaterial)
+        // Master Concrete Material 
         const concreteMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0xa3a3a3,
+            color: new THREE.Color('#a3a3a3'),
             roughness: 0.9,      
             metalness: 0.0,      
             clearcoat: 0.0,      
             clearcoatRoughness: 0.0,
         });
 
-        // 7. Construct a 3D Fluted Wall Panel
-        const panelGroup = new THREE.Group();
-
-        // Flat backing slab
-        const baseGeo = new THREE.BoxGeometry(2, 3, 0.1);
-        const baseMesh = new THREE.Mesh(baseGeo, concreteMaterial);
-        baseMesh.castShadow = true;
-        baseMesh.receiveShadow = true;
-        panelGroup.add(baseMesh);
-
-        // Architectural fluted ridges
-        const ribGeo = new THREE.CylinderGeometry(0.06, 0.06, 3, 16);
-        for(let i = 0; i < 15; i++) {
-            const rib = new THREE.Mesh(ribGeo, concreteMaterial);
-            rib.position.set(-0.84 + (i * 0.12), 0, 0.05); 
-            rib.castShadow = true;
-            rib.receiveShadow = true;
-            panelGroup.add(rib);
-        }
-
-        panelGroup.position.y = 1.5; 
-        scene.add(panelGroup);
-
-        // 8. The Floor (To catch realistic shadows)
+        // Floor
         const floorGeo = new THREE.PlaneGeometry(50, 50);
-        const floorMat = new THREE.MeshStandardMaterial({ 
-            color: 0xffffff, 
-            roughness: 1, 
-            metalness: 0 
-        });
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 });
         const floor = new THREE.Mesh(floorGeo, floorMat);
         floor.rotation.x = -Math.PI / 2;
         floor.receiveShadow = true;
         scene.add(floor);
 
-        // 9. Handle Browser Resizing
-        window.addEventListener('resize', () => {
+
+        // ==========================================
+        // DYNAMIC 3D SHAPE BUILDER (.GLB AND MATH)
+        // ==========================================
+        let currentPanelGroup = null;
+
+        function createDiamondRing(size, thickness, depth, mat) {
+            const ring = new THREE.Group();
+            const length = size / Math.sqrt(2);
+            const geo = new THREE.BoxGeometry(length + thickness, thickness, depth);
+            const offset = size / 4; 
+            
+            const s1 = new THREE.Mesh(geo, mat); s1.position.set(offset, offset, depth/2); s1.rotation.z = Math.PI/4; s1.castShadow = true; s1.receiveShadow = true;
+            const s2 = new THREE.Mesh(geo, mat); s2.position.set(-offset, offset, depth/2); s2.rotation.z = -Math.PI/4; s2.castShadow = true; s2.receiveShadow = true;
+            const s3 = new THREE.Mesh(geo, mat); s3.position.set(-offset, -offset, depth/2); s3.rotation.z = Math.PI/4; s3.castShadow = true; s3.receiveShadow = true;
+            const s4 = new THREE.Mesh(geo, mat); s4.position.set(offset, -offset, depth/2); s4.rotation.z = -Math.PI/4; s4.castShadow = true; s4.receiveShadow = true;
+            
+            ring.add(s1, s2, s3, s4);
+            return ring;
+        }
+
+        function buildShape(shapeType) {
+            loader.style.opacity = '1';
+            
+            setTimeout(() => {
+                if (currentPanelGroup) {
+                    scene.remove(currentPanelGroup);
+                }
+
+                currentPanelGroup = new THREE.Group();
+
+                // --------------------------------------------------
+                // LOAD CUSTOM DFG.GLB FILE
+                // --------------------------------------------------
+                if (shapeType === 'custom') {
+                    const gltfLoader = new THREE.GLTFLoader();
+                    
+                    gltfLoader.load('DFG.glb', function(gltf) {
+                        const model = gltf.scene;
+
+                        // 1. Force the model to use our concrete material and shadows
+                        model.traverse((child) => {
+                            if (child.isMesh) {
+                                child.material = concreteMaterial;
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                            }
+                        });
+
+                        // 2. Make it Visible: Auto-Center and Auto-Scale
+                        const box = new THREE.Box3().setFromObject(model);
+                        const center = box.getCenter(new THREE.Vector3());
+                        const size = box.getSize(new THREE.Vector3());
+
+                        // Center the math
+                        model.position.sub(center);
+
+                        // Put it in a wrapper
+                        const wrapper = new THREE.Group();
+                        wrapper.add(model);
+
+                        // Scale to fit a standard 3.2m height so it's clearly visible
+                        const maxDim = Math.max(size.x, size.y, size.z);
+                        if(maxDim > 0) {
+                            const scale = 3.2 / maxDim; 
+                            wrapper.scale.set(scale, scale, scale);
+                        }
+
+                        currentPanelGroup.add(wrapper);
+                        currentPanelGroup.position.y = 1.5; 
+                        scene.add(currentPanelGroup);
+                        loader.style.opacity = '0';
+
+                    }, undefined, function(error) {
+                        console.error('Error loading DFG.glb:', error);
+                        loader.innerText = "Error: DFG.glb not found";
+                        setTimeout(() => { loader.style.opacity = '0'; loader.innerHTML = 'Loading Geometry...<div class="spinner"></div>'; }, 3000);
+                    });
+
+                    // Exit function early so it waits for GLB to load
+                    return; 
+                } 
+                // --------------------------------------------------
+
+                else if (shapeType === 'fluted') {
+                    const baseGeo = new THREE.BoxGeometry(2, 3, 0.1);
+                    const baseMesh = new THREE.Mesh(baseGeo, concreteMaterial);
+                    baseMesh.castShadow = true; baseMesh.receiveShadow = true;
+                    currentPanelGroup.add(baseMesh);
+
+                    const ribGeo = new THREE.CylinderGeometry(0.06, 0.06, 3, 16);
+                    for(let i = 0; i < 15; i++) {
+                        const rib = new THREE.Mesh(ribGeo, concreteMaterial);
+                        rib.position.set(-0.84 + (i * 0.12), 0, 0.05); 
+                        rib.castShadow = true; rib.receiveShadow = true;
+                        currentPanelGroup.add(rib);
+                    }
+
+                } else if (shapeType === 'diamond') {
+                    const panelWidth = 2.4;
+                    const panelHeight = 3.2;
+                    const tileSize = 0.8; 
+
+                    const baseGeo = new THREE.BoxGeometry(panelWidth, panelHeight, 0.1);
+                    const baseMesh = new THREE.Mesh(baseGeo, concreteMaterial);
+                    baseMesh.castShadow = true; baseMesh.receiveShadow = true;
+                    currentPanelGroup.add(baseMesh);
+
+                    for(let x = -0.8; x <= 0.8; x += tileSize) {
+                        for(let y = -1.2; y <= 1.2; y += tileSize) {
+                            const pyrGeo = new THREE.ConeGeometry(tileSize * 0.15, 0.08, 4);
+                            pyrGeo.rotateX(Math.PI/2); pyrGeo.rotateZ(Math.PI/4); 
+                            const pyr = new THREE.Mesh(pyrGeo, concreteMaterial);
+                            pyr.position.set(x, y, 0.05);
+                            pyr.castShadow = true; pyr.receiveShadow = true;
+                            currentPanelGroup.add(pyr);
+
+                            const ring1 = createDiamondRing(tileSize * 0.45, 0.05, 0.06, concreteMaterial);
+                            ring1.position.set(x, y, 0.05); currentPanelGroup.add(ring1);
+
+                            const ring2 = createDiamondRing(tileSize * 0.8, 0.08, 0.1, concreteMaterial);
+                            ring2.position.set(x, y, 0.05); currentPanelGroup.add(ring2);
+
+                            const hLineGeo = new THREE.BoxGeometry(tileSize, 0.06, 0.08);
+                            const hLine = new THREE.Mesh(hLineGeo, concreteMaterial);
+                            hLine.position.set(x, y + tileSize/2, 0.05 + 0.04);
+                            hLine.castShadow = true; hLine.receiveShadow = true; currentPanelGroup.add(hLine);
+                            
+                            const vLineGeo = new THREE.BoxGeometry(0.06, tileSize, 0.08);
+                            const vLine = new THREE.Mesh(vLineGeo, concreteMaterial);
+                            vLine.position.set(x + tileSize/2, y, 0.05 + 0.04);
+                            vLine.castShadow = true; vLine.receiveShadow = true; currentPanelGroup.add(vLine);
+                        }
+                    }
+                }
+
+                currentPanelGroup.position.y = 1.5; 
+                scene.add(currentPanelGroup);
+                
+                setTimeout(() => { loader.style.opacity = '0'; }, 200);
+            }, 50); 
+        }
+
+        // Initialize with custom model
+        buildShape('custom');
+
+        function changeShape(type, btn) {
+            document.getElementById('btn-custom').classList.remove('active');
+            document.getElementById('btn-fluted').classList.remove('active');
+            document.getElementById('btn-diamond').classList.remove('active');
+            btn.classList.add('active');
+            buildShape(type);
+        }
+        // ==========================================
+
+
+        // Responsive Resizing
+        function resizeCanvas() {
             const width = container.clientWidth;
             const height = container.clientHeight;
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
-        });
-        
-        // Initial resize trigger to fix initial aspect ratio
-        setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 150);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 100);
 
-        // 10. Animation Loop
+        // Animation Loop
         function animate() {
             requestAnimationFrame(animate);
             controls.update(); 
@@ -318,34 +446,13 @@
         }
         animate();
 
-        // --- BUTTON INTERACTIVITY ---
-
-        // Change Lighting (Interior vs Exterior)
-        function changeLighting(type, btn) {
-            document.querySelectorAll('.control-group:nth-child(1) .option-btn').forEach(b => b.classList.remove('active'));
+        // --- MATERIAL & LIGHTING BUTTONS ---
+        function changeMaterial(type, btn) {
+            btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            if (type === 'interior') {
-                dirLight.intensity = 1.2; // Soft studio
-                dirLight.position.set(5, 10, 5);
-                renderer.toneMappingExposure = 1.0;
-            } else if (type === 'exterior') {
-                dirLight.intensity = 2.5; // Harsh sun
-                dirLight.position.set(-10, 15, 10);
-                renderer.toneMappingExposure = 1.3;
-            }
-        }
-
-        // Change Material Roughness (Smooth vs Exposed vs Polished)
-        function changeFinish(type, btn) {
-            document.querySelectorAll('.control-group:nth-child(2) .option-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if (type === 'smooth') {
+            if (type === 'matte') {
                 concreteMaterial.roughness = 0.9;
-                concreteMaterial.clearcoat = 0.0;
-            } else if (type === 'exposed') {
-                concreteMaterial.roughness = 1.0;
                 concreteMaterial.clearcoat = 0.0;
             } else if (type === 'polished') {
                 concreteMaterial.roughness = 0.1;
@@ -355,10 +462,44 @@
             concreteMaterial.needsUpdate = true;
         }
 
-        // Color Picker Logic
-        const colorPicker = document.getElementById('panel-color');
-        colorPicker.addEventListener('input', function(e) {
-            concreteMaterial.color.set(e.target.value);
+        function changeLighting(type, btn) {
+            document.querySelectorAll('#tab-light .option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (type === 'interior') {
+                dirLight.intensity = 1.2;
+                dirLight.position.set(5, 10, 5);
+                renderer.toneMappingExposure = 1.0;
+            } else if (type === 'exterior') {
+                dirLight.intensity = 2.5; 
+                dirLight.position.set(-10, 15, 10);
+                renderer.toneMappingExposure = 1.3;
+            }
+        }
+
+        // --- IRO.JS COLOR DIAL ---
+        let dialSize = window.innerWidth < 768 ? 200 : 250;
+        var colorPicker = new iro.ColorPicker("#color-dial", {
+            width: dialSize,
+            color: "#a3a3a3",
+            borderWidth: 2,
+            borderColor: "#ffffff",
+            layout: [
+                { component: iro.ui.Wheel },
+                { component: iro.ui.Slider, options: { sliderType: 'value' } }
+            ]
+        });
+
+        colorPicker.on('color:change', function(color) {
+            concreteMaterial.color.set(color.hexString); 
+            const previewBox = document.getElementById('mixer-preview');
+            previewBox.style.backgroundColor = color.hexString; 
+            previewBox.innerText = color.hexString.toUpperCase(); 
+            if(color.hsl.l > 70) {
+                previewBox.style.color = '#111111';
+            } else {
+                previewBox.style.color = '#ffffff';
+            }
         });
     </script>
 </body>
