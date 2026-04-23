@@ -123,7 +123,6 @@
     </header>
 
     <div class="app-container">
-        
         <div class="view-area">
             <div id="loader">Loading Geometry...<div class="spinner"></div></div>
             <div id="canvas-container"></div>
@@ -211,18 +210,25 @@
             if(tabId === 'tab-color') { window.dispatchEvent(new Event('resize')); }
         }
 
-        // --- 3D ENGINE SETUP ---
+        // --- 3D ENGINE SETUP (PERFORMANCE OPTIMIZED) ---
         const container = document.getElementById('canvas-container');
         const loader = document.getElementById('loader');
         const scene = new THREE.Scene();
 
-        // Renderer
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
+        // Check if device is mobile to apply performance hacks
+        const isMobile = window.innerWidth < 768;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true });
+        
+        // HUGE MOBILE FIX: Cap pixel ratio on phones to stop lag
+        const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
+        renderer.setPixelRatio(pixelRatio);
+        
         renderer.toneMapping = THREE.ACESFilmicToneMapping; 
         renderer.toneMappingExposure = 1.0;
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        // Optimization: Use basic shadows on mobile instead of heavy soft shadows
+        renderer.shadowMap.type = isMobile ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
         // Camera & Controls
@@ -249,8 +255,11 @@
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
         dirLight.position.set(5, 10, 5);
         dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 2048;
-        dirLight.shadow.mapSize.height = 2048;
+        
+        // HUGE MOBILE FIX: Reduce shadow resolution on phones
+        const shadowRes = isMobile ? 512 : 2048;
+        dirLight.shadow.mapSize.width = shadowRes;
+        dirLight.shadow.mapSize.height = shadowRes;
         dirLight.shadow.bias = -0.0005; 
         scene.add(dirLight);
 
@@ -268,6 +277,7 @@
         const floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 });
         const floor = new THREE.Mesh(floorGeo, floorMat);
         floor.rotation.x = -Math.PI / 2;
+        // Optimization: Turn off shadow receiving on the floor for mobile if needed, but keeping it for now
         floor.receiveShadow = true;
         scene.add(floor);
 
@@ -298,6 +308,12 @@
             setTimeout(() => {
                 if (currentPanelGroup) {
                     scene.remove(currentPanelGroup);
+                    // Pro Optimization: Clean up memory
+                    currentPanelGroup.traverse(function(child) {
+                        if(child.isMesh) {
+                            if(child.geometry) child.geometry.dispose();
+                        }
+                    });
                 }
 
                 currentPanelGroup = new THREE.Group();
@@ -311,7 +327,6 @@
                     gltfLoader.load('DFG.glb', function(gltf) {
                         const model = gltf.scene;
 
-                        // 1. Force the model to use our concrete material and shadows
                         model.traverse((child) => {
                             if (child.isMesh) {
                                 child.material = concreteMaterial;
@@ -320,19 +335,15 @@
                             }
                         });
 
-                        // 2. Make it Visible: Auto-Center and Auto-Scale
                         const box = new THREE.Box3().setFromObject(model);
                         const center = box.getCenter(new THREE.Vector3());
                         const size = box.getSize(new THREE.Vector3());
 
-                        // Center the math
                         model.position.sub(center);
 
-                        // Put it in a wrapper
                         const wrapper = new THREE.Group();
                         wrapper.add(model);
 
-                        // Scale to fit a standard 3.2m height so it's clearly visible
                         const maxDim = Math.max(size.x, size.y, size.z);
                         if(maxDim > 0) {
                             const scale = 3.2 / maxDim; 
@@ -350,7 +361,6 @@
                         setTimeout(() => { loader.style.opacity = '0'; loader.innerHTML = 'Loading Geometry...<div class="spinner"></div>'; }, 3000);
                     });
 
-                    // Exit function early so it waits for GLB to load
                     return; 
                 } 
                 // --------------------------------------------------
