@@ -2,86 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us | Sambandh Sales</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Get in Touch | Sambandh Sales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --accent-color: #d1c8c1; --border-color: #e5e5e5; }
+        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --border-color: #e5e5e5; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
 
-        /* FADE IN ANIMATION */
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        /* HEADER & NAVIGATION */
-        header { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 1000; }
-        .logo { display: flex; align-items: center; gap: 15px; z-index: 1001; text-decoration: none;}
+        /* RESTORED PREMIUM HEADER (Matches Visualizer Perfectly) */
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: #fff; height: 85px; z-index: 1000; position: sticky; top: 0; width: 100%;}
+        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
         .logo img { max-height: 45px; width: auto; }
-        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
-        nav ul { list-style: none; display: flex; gap: 40px; }
-        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; position: relative; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        
+        nav ul { list-style: none; display: flex; gap: 35px; }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s; position: relative;}
         nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
         nav a:hover::after { width: 100%; }
-
-        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 1001; }
-        .hamburger span { display: block; width: 30px; height: 2px; background-color: var(--text-dark); transition: all 0.3s ease-in-out; }
-
-        /* PAGE HEADER */
-        .page-header { padding: 120px 5% 80px; text-align: center; background-color: var(--bg-alt);}
-        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 4rem; text-transform: uppercase; font-weight: 700; line-height: 1.1; margin-bottom: 20px; letter-spacing: 1px;}
-        .page-header p { font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; letter-spacing: 1px;}
-
-        /* CONTACT FORM */
-        .contact-container { max-width: 1400px; margin: 100px auto; padding: 0 5%; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start;}
-        .contact-info h2 { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1.2; margin-bottom: 30px; color: var(--text-dark);}
-        .contact-info p { margin-bottom: 15px; font-size: 1.05rem; color: var(--text-light); line-height: 1.8;}
         
-        .form-group { margin-bottom: 30px; }
-        .form-group label { display: block; margin-bottom: 10px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
-        .form-group input, .form-group textarea { width: 100%; padding: 18px; border: 1px solid var(--border-color); background: var(--bg-alt); font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; transition: border-color 0.3s, background 0.3s;}
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--text-dark); background: #fff;}
-        .submit-btn { background: var(--text-dark); color: #fff; padding: 20px 40px; border: none; font-size: 0.95rem; cursor: pointer; font-weight: 700; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: background 0.3s; border-radius: 3px;}
-        .submit-btn:hover { background: #333; }
+        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; padding: 10px;}
+        .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
+
+        /* FLUID HERO SECTION */
+        .contact-hero { padding: clamp(60px, 10vh, 120px) 5% clamp(40px, 8vh, 80px); text-align: center; background-color: var(--bg-alt); }
+        .contact-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 5vw, 4rem); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; line-height: 1.1;}
+        .contact-hero p { color: var(--text-light); max-width: 600px; margin: 0 auto; font-size: clamp(1rem, 1.5vw, 1.1rem);}
+
+        /* RESPONSIVE GRID */
+        .contact-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(40px, 6vw, 80px); padding: clamp(50px, 8vh, 100px) 5%; max-width: 1400px; margin: 0 auto; }
+
+        /* FORM SIDE */
+        .info-block { margin-bottom: 40px; }
+        .info-block h3 { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; color: var(--text-light); margin-bottom: 10px; font-weight: 700;}
+        .info-block p, .info-block a { font-size: clamp(1.1rem, 2vw, 1.3rem); color: var(--text-dark); text-decoration: none; font-family: 'Playfair Display', serif; font-weight: 500; line-height: 1.5;}
+
+        .contact-form { margin-top: 40px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px; color: var(--text-light); }
+        
+        /* 16px font-size prevents iOS Safari from auto-zooming */
+        .form-group input, .form-group textarea { width: 100%; padding: 15px 0; border: none; border-bottom: 1px solid var(--border-color); font-family: 'Inter', sans-serif; font-size: 16px; outline: none; transition: border-color 0.3s; background: transparent; border-radius: 0;}
+        .form-group input:focus, .form-group textarea:focus { border-bottom-color: var(--text-dark); }
+        
+        .submit-btn { background: var(--text-dark); color: #fff; border: none; padding: 20px 40px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: opacity 0.3s; margin-top: 10px; width: clamp(200px, 100%, 300px);}
+        .submit-btn:hover { opacity: 0.9; }
+
+        /* MAP SIDE */
+        .map-wrapper { position: relative; width: 100%; height: clamp(400px, 60vh, 700px); background: #eee; border-radius: 4px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.05); }
+        .map-wrapper iframe { width: 100%; height: 100%; border: none; filter: grayscale(1) contrast(1.2) opacity(0.8); transition: filter 0.5s ease;}
+        .map-wrapper:hover iframe { filter: grayscale(0) contrast(1) opacity(1); }
 
         /* FOOTER */
-        footer { background-color: var(--text-dark); color: #f4f4f0; }
-        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
-        .footer-col h3 { font-size: 0.9rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
-        .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; filter: invert(1); }
-        .footer-logo img { max-height: 40px; }
-        .footer-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px;}
-        .footer-col p { margin-bottom: 20px; color: #999; font-size: 0.95rem; line-height: 1.8;}
+        footer { background-color: var(--text-dark); color: #999; padding: clamp(50px, 8vh, 80px) 5% 40px; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 50px; max-width: 1400px; margin: 0 auto; margin-bottom: 60px;}
+        .footer-logo { color: #fff; font-family: 'Playfair Display', serif; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: block;}
+        .footer-col h4 { color: #fff; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 25px;}
         .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 15px; }
-        .footer-col ul a { color: #999; text-decoration: none; transition: color 0.3s; font-size: 0.9rem;}
-        .footer-col ul a:hover { color: #fff; }
-        .newsletter-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; margin-bottom: 15px; outline: none; transition: border-color 0.3s;}
-        .newsletter-input:focus { border-color: #fff; }
-        .newsletter-btn { background: #fff; color: var(--text-dark); padding: 16px 20px; border: none; font-weight: 700; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: background 0.3s;}
-        .newsletter-btn:hover { background: var(--accent-color); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #777; flex-wrap: wrap; gap: 15px;}
+        .footer-col li { margin-bottom: 12px; }
+        .footer-col a { color: #999; text-decoration: none; transition: color 0.3s; }
+        .footer-col a:hover { color: #fff; }
+        .footer-bottom { border-top: 1px solid #222; padding-top: 30px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; font-size: 0.8rem; max-width: 1400px; margin: 0 auto;}
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) { .contact-container { grid-template-columns: 1fr; gap: 60px;} .footer-top { grid-template-columns: 1fr 1fr; } }
+        /* ========================================= */
+        /* SUPER RESPONSIVE MOBILE BREAKPOINTS       */
+        /* ========================================= */
+        
+        @media (max-width: 900px) {
+            .contact-container { grid-template-columns: 1fr; }
+            .map-wrapper { height: 400px; }
+            /* Prevents the map from trapping the user's thumb when scrolling on mobile */
+            .map-wrapper::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: transparent; z-index: 10; }
+            .map-wrapper:active::after { display: none; }
+        }
+
         @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            .logo-text { font-size: 1.1rem; }
-            .logo img { max-height: 35px; }
+            header { height: 75px; padding: 10px 15px; }
             .hamburger { display: flex; }
-            nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background-color: #fff; border-left: 1px solid var(--border-color); box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; padding-top: 90px; }
-            nav.active { right: 0; }
-            nav ul { flex-direction: column; gap: 20px; padding: 0 30px; }
-            nav a { font-size: 1.1rem; display: block; padding: 15px 0; border-bottom: 1px solid var(--border-color);}
-            .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-            .hamburger.active span:nth-child(2) { opacity: 0; }
-            .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            nav { position: fixed; top: 75px; left: -100%; width: 100%; height: calc(100dvh - 75px); background-color: #fff; transition: left 0.3s ease; padding: 30px 20px; z-index: 999; border-top: 1px solid var(--border-color); overflow-y: auto;}
+            nav.active { left: 0; }
+            nav ul { flex-direction: column; gap: 20px; }
+            nav a { font-size: 1.2rem; display: block; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
             
-            .page-header h1 { font-size: 2.8rem; }
-            .contact-info h2 { font-size: 2.2rem; }
-            .footer-top { grid-template-columns: 1fr; text-align: center; padding: 60px 5%;}
-            .footer-logo { justify-content: center; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+            /* Hamburger Animation */
+            .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        }
+
+        @media (max-width: 400px) {
+            .submit-btn { width: 100%; }
         }
     </style>
 </head>
@@ -89,7 +100,7 @@
 
     <header>
         <a href="index.html" class="logo">
-            <img src="logo.png" alt="Logo">
+            <img src="logo.png" alt="Sambandh Sales Logo">
             <span class="logo-text">Sambandh Sales</span>
         </a>
         <button class="hamburger" aria-label="Toggle navigation">
@@ -102,109 +113,103 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="gallery.html">Products</a></li>
-                <li><a href="visualizer.html">visualizer</a></li>
+                <li><a href="visualizer.html">Visualizer</a></li>
                 <li><a href="contact.html">Get in Touch</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="page-header">
-        <h1 class="reveal">Cast Your Vision</h1>
-        <p class="reveal">Get a quote for your architectural concrete project.</p>
-    </div>
+    <section class="contact-hero">
+        <h1>Connect with us</h1>
+        <p>Whether you're an architect, developer, or homeowner, we're here to help you redefine your architectural surfaces.</p>
+    </section>
 
     <div class="contact-container">
-        <div class="contact-info reveal">
-            <h2>Reach Out To Our Engineers</h2>
-            <p><strong>Headquarters:</strong> Vadodara, Gujarat</p>
-            <p><strong>Email:</strong> info@sambandhsales.com</p>
-            <p><strong>Phone:</strong> +91 XXXXX XXXXX</p>
-            <br>
-            <p>Our team is ready to supply world-class pre-cast concrete panels for your next commercial or residential project. Let us know the square footage and your required finishes.</p>
-        </div>
         
-        <form class="contact-form reveal">
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" placeholder="Your Name" required>
+        <div class="contact-info">
+            <div class="info-block">
+                <h3>Our Studio</h3>
+                <p>Chhani, Vadodara,<br>Gujarat, India</p>
             </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" placeholder="Your Email" required>
+
+            <div class="info-block">
+                <h3>Inquiries</h3>
+                <a href="mailto:info@sambandhsales.com">info@sambandhsales.com</a><br>
+                <p style="margin-top: 10px;">+91 XXXXX XXXXX</p>
             </div>
-            <div class="form-group">
-                <label>Concrete Project Requirements</label>
-                <textarea rows="5" placeholder="Tell us about the space, required square footage, and desired finish..." required></textarea>
-            </div>
-            <button type="submit" class="submit-btn">Send Inquiry</button>
-        </form>
+
+            <form class="contact-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="e.g. Rahul Patel" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Project Brief</label>
+                    <textarea rows="4" placeholder="Tell us about your architectural project..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+
+        <div class="map-wrapper">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14761.564531818296!2d73.16781295!3d22.3388307!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395fc9167e4e1381%3A0x6e245558f62c07!2sChhani%2C%20Vadodara%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1714115000000!5m2!1sen!2sin" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+
     </div>
 
     <footer>
-        <div class="footer-top">
+        <div class="footer-content">
             <div class="footer-col">
-                <div class="footer-logo">
-                    <img src="logo.png" alt="Logo">
-                    <span>Sambandh Sales</span>
-                </div>
-                <p>Specialized pre-cast concrete engineering for interior design and exterior facades. Crafted for the modern architectural landscape.</p>
+                <span class="footer-logo">Sambandh Sales</span>
+                <p>Premium pre-cast concrete solutions for modern architecture. Based in Vadodara, serving visionary designers nationwide.</p>
             </div>
             <div class="footer-col">
-                <h3>Our Collections</h3>
+                <h4>Navigation</h4>
                 <ul>
-                    <li><a href="gallery.html">Smooth Brutalist</a></li>
-                    <li><a href="gallery.html">Exposed Aggregate</a></li>
-                    <li><a href="gallery.html">Board-Formed</a></li>
-                    <li><a href="visualizer.html">3D Environment</a></li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="gallery.html">Collection</a></li>
+                    <li><a href="visualizer.html">3D Simulator</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>Contact Desk</h3>
+                <h4>Connect</h4>
                 <ul>
-                    <li>Vadodara, Gujarat</li>
-                    <li>India</li>
-                    <li style="margin-top: 15px; margin-bottom: 5px;">Project Inquiries:</li>
-                    <li><a href="mailto:info@sambandhsales.com" style="color: #fff;">info@sambandhsales.com</a></li>
-                    <li>+91 XXXXX XXXXX</li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
                 </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Architectural Newsletter</h3>
-                <form action="#">
-                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
-                    <button type="submit" class="newsletter-btn">Subscribe</button>
-                </form>
-                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">Stay updated on new texture releases and material innovations.</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <div>&copy; 2026 Sambandh Sales. All Rights Reserved.</div>
-            <div>Designed & Developed by Vishwakarma Cyber Technologies</div>
+            <p>© 2026 Sambandh Sales. All Rights Reserved.</p>
+            <p>Developed by Vishwakarma Cyber Technologies</p>
         </div>
     </footer>
 
     <script>
         const hamburger = document.querySelector('.hamburger');
         const nav = document.querySelector('nav');
+        
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             nav.classList.toggle('active');
-        });
-
-        // Scroll Reveal Animation Script
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 100; 
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add("active");
-                }
+            // Prevent body scrolling when mobile menu is open
+            if(nav.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
             }
-        }
-        window.addEventListener("scroll", reveal);
-        reveal(); // Trigger on load
+        });
     </script>
 </body>
 </html>
