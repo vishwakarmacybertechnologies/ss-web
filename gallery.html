@@ -2,259 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Products | Sambandh Sales</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --accent-color: #d1c8c1; --border-color: #e5e5e5; }
+        :root { --text-dark: #111111; --text-light: #555555; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; color: var(--text-dark); line-height: 1.7; overflow-x: hidden; background: #f0edea;}
 
-        /* FADE IN ANIMATION */
+        .bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; background: #f4f4f0; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.6; }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #d1c8c1; }
+        .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: #e0dcd9; }
+        .blob-3 { top: 30%; left: 40%; width: 40vw; height: 40vw; background: #ffffff; }
+
+        .glass-fluted { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.6); background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 1px, transparent 1px, transparent 8px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* HEADER & NAVIGATION */
-        header { padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: rgba(255, 255, 255, 0.98); position: sticky; top: 0; z-index: 1000; }
-        .logo { display: flex; align-items: center; gap: 15px; z-index: 1001; text-decoration: none;}
-        .logo img { max-height: 45px; width: auto; }
-        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        header { position: fixed; top: 15px; left: 2.5%; width: 95%; height: 75px; z-index: 1000; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
+        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
+        .logo img { max-height: 35px; width: auto; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        
         nav ul { list-style: none; display: flex; gap: 40px; }
-        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; position: relative; }
-        nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
-        nav a:hover::after { width: 100%; }
-
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; transition: opacity 0.3s; }
+        nav a:hover { opacity: 0.5; }
+        
         .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 1001; }
-        .hamburger span { display: block; width: 30px; height: 2px; background-color: var(--text-dark); transition: all 0.3s ease-in-out; }
+        .hamburger span { display: block; width: 30px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
 
-        /* PAGE HEADER */
-        .page-header { padding: 120px 5% 80px; text-align: center; background-color: var(--bg-alt);}
-        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 4rem; text-transform: uppercase; font-weight: 700; line-height: 1.1; margin-bottom: 20px; letter-spacing: 1px;}
-        .page-header p { font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto; letter-spacing: 1px;}
+        .page-header { margin: 110px 2.5% 20px; padding: 80px 5%; text-align: center; border-radius: 20px;}
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 5vw, 4rem); text-transform: uppercase; font-weight: 700; line-height: 1.1; margin-bottom: 20px;}
 
-        /* TRUE MASONRY GALLERY SYSTEM */
-        .full-gallery { 
-            padding: 100px 5%; 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            column-count: 3; 
-            column-gap: 40px; 
-        }
-        
-        .gallery-item { 
-            break-inside: avoid; 
-            margin-bottom: 40px; 
-            border-radius: 3px; 
-            position: relative; 
-            background: #000; 
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .gallery-item img { 
-            width: 100%; 
-            display: block; 
-            height: auto; 
-            transition: transform 0.8s ease, opacity 0.5s ease; 
-            opacity: 0.95;
-        }
-        
-        .gallery-item:hover img { 
-            transform: scale(1.05); 
-            opacity: 0.6;
-        }
-
-        .gallery-overlay { 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            color: #fff; 
-            font-family: 'Playfair Display', serif; 
-            font-size: 1.5rem; 
-            font-weight: 500; 
-            opacity: 0; 
-            transition: opacity 0.5s ease; 
-            pointer-events: none;
-            text-align: center;
-        }
+        .full-gallery { padding: 40px 2.5%; max-width: 1400px; margin: 0 auto; column-count: 3; column-gap: 30px; }
+        .gallery-item { break-inside: avoid; margin-bottom: 30px; border-radius: 12px; position: relative; cursor: pointer; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.8);}
+        .gallery-item img { width: 100%; display: block; height: auto; transition: transform 0.8s ease; }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.4); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.4s; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600;}
         .gallery-item:hover .gallery-overlay { opacity: 1; }
 
-        /* FOOTER */
-        footer { background-color: var(--text-dark); color: #f4f4f0; }
-        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
-        .footer-col h3 { font-size: 0.9rem; margin-bottom: 30px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
-        .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; filter: invert(1); }
-        .footer-logo img { max-height: 40px; }
-        .footer-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px;}
-        .footer-col p { margin-bottom: 20px; color: #999; font-size: 0.95rem; line-height: 1.8;}
+        footer { margin: 20px 2.5%; border-radius: 20px; padding: 80px 5% 30px; color: var(--text-dark);}
+        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; max-width: 1400px; margin: 0 auto; margin-bottom: 60px;}
+        .footer-logo { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .footer-logo img { max-height: 45px; }
+        .footer-logo span { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(1.2rem, 2vw, 1.5rem); text-transform: uppercase; letter-spacing: 1.5px;}
+        .footer-col h3 { font-size: 0.9rem; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;}
+        .footer-col p, .footer-col ul a { color: var(--text-light); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;}
         .footer-col ul { list-style: none; }
         .footer-col ul li { margin-bottom: 15px; }
-        .footer-col ul a { color: #999; text-decoration: none; transition: color 0.3s; font-size: 0.9rem;}
-        .footer-col ul a:hover { color: #fff; }
-        .newsletter-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; margin-bottom: 15px; outline: none; transition: border-color 0.3s;}
-        .newsletter-input:focus { border-color: #fff; }
-        .newsletter-btn { background: #fff; color: var(--text-dark); padding: 16px 20px; border: none; font-weight: 700; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: background 0.3s;}
-        .newsletter-btn:hover { background: var(--accent-color); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #777; flex-wrap: wrap; gap: 15px;}
+        .footer-col ul a:hover { color: var(--text-dark); }
+        .newsletter-input { width: 100%; padding: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8); border-radius: 6px; margin-bottom: 15px; outline: none;}
+        .newsletter-btn { background: var(--text-dark); color: #fff; padding: 16px 20px; border: none; font-weight: 700; width: 100%; border-radius: 6px;}
+        .footer-bottom { border-top: 1px solid rgba(0,0,0,0.1); padding-top: 30px; display: flex; justify-content: space-between; font-size: 0.85rem;}
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) { .full-gallery { column-count: 2; } }
-        @media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 1024px) { .full-gallery { column-count: 2; } .footer-top { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            .logo-text { font-size: 1.1rem; }
-            .logo img { max-height: 35px; }
+            header { top: 10px; left: 2.5%; width: 95%; height: 65px; padding: 0 20px; }
             .hamburger { display: flex; }
-            nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background-color: #fff; border-left: 1px solid var(--border-color); box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: right 0.3s ease; padding-top: 90px; }
-            nav.active { right: 0; }
-            nav ul { flex-direction: column; gap: 20px; padding: 0 30px; }
-            nav a { font-size: 1.1rem; display: block; padding: 15px 0; border-bottom: 1px solid var(--border-color);}
-            .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-            .hamburger.active span:nth-child(2) { opacity: 0; }
-            .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-            
-            .page-header h1 { font-size: 2.8rem; }
-            .full-gallery { column-count: 1; padding: 60px 5%; gap: 0;}
-            .footer-top { grid-template-columns: 1fr; text-align: center; padding: 60px 5%;}
+            nav { position: fixed; top: 85px; left: -100%; width: 95%; height: calc(100dvh - 100px); border-radius: 16px; transition: left 0.3s ease; padding: 30px; z-index: 999; flex-direction: column; background: rgba(255,255,255,0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+            nav.active { left: 2.5%; }
+            nav ul { flex-direction: column; gap: 25px; }
+            nav a { font-size: 1.2rem; display: block; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; }
+            .page-header { margin-top: 90px; }
+            .full-gallery { column-count: 1; }
+            .footer-top { grid-template-columns: 1fr; text-align: center; }
             .footer-logo { justify-content: center; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+            .footer-bottom { flex-direction: column; text-align: center; gap: 10px;}
         }
     </style>
 </head>
 <body>
+    <div class="bg-canvas"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
 
-    <header>
-        <a href="index.html" class="logo">
-            <img src="logo.png" alt="Logo">
-            <span class="logo-text">Sambandh Sales</span>
-        </a>
-        <button class="hamburger" aria-label="Toggle navigation">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav>
+    <header class="glass-fluted">
+        <a href="index.html" class="logo"><img src="logo.png" alt="Sambandh Sales Logo"><span class="logo-text">Sambandh Sales</span></a>
+        <button class="hamburger"><span></span><span></span><span></span></button>
+        <nav id="mobile-nav">
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="gallery.html">Products</a></li>
-                <li><a href="visualizer.html">visualizer</a></li>
+                <li><a href="visualizer.html">Visualizer</a></li>
                 <li><a href="contact.html">Get in Touch</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="page-header">
-        <h1 class="reveal">Concrete Collection</h1>
-        <p class="reveal">Explore our complete portfolio of pre-cast architectural panels.</p>
+    <div class="page-header glass-fluted reveal">
+        <h1>Concrete Collection</h1>
+        <p>Explore our complete portfolio of pre-cast architectural panels.</p>
     </div>
 
-    <section class="full-gallery reveal" id="gallery-container">
-    </section>
+    <section class="full-gallery reveal" id="gallery-container"></section>
 
-    <footer>
+    <footer class="glass-fluted">
         <div class="footer-top">
+            <div class="footer-col"><div class="footer-logo"><img src="logo.png" alt="Sambandh Sales Logo"><span class="logo-text">Sambandh Sales</span></div><p>Specialized pre-cast concrete engineering.</p></div>
             <div class="footer-col">
-                <div class="footer-logo">
-                    <img src="logo.png" alt="Logo">
-                    <span>Sambandh Sales</span>
-                </div>
-                <p>Specialized pre-cast concrete engineering for interior design and exterior facades. Crafted for the modern architectural landscape.</p>
-            </div>
-            <div class="footer-col">
-                <h3>Our Collections</h3>
+                <h3>Navigation</h3>
                 <ul>
-                    <li><a href="gallery.html">Smooth Brutalist</a></li>
-                    <li><a href="gallery.html">Exposed Aggregate</a></li>
-                    <li><a href="gallery.html">Board-Formed</a></li>
-                    <li><a href="visualizer.html">3D Environment</a></li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">Our Story</a></li>
+                    <li><a href="gallery.html">Products</a></li>
+                    <li><a href="visualizer.html">3D Visualizer</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
                 </ul>
             </div>
-            <div class="footer-col">
-                <h3>Contact Desk</h3>
-                <ul>
-                    <li>Vadodara, Gujarat</li>
-                    <li>India</li>
-                    <li style="margin-top: 15px; margin-bottom: 5px;">Project Inquiries:</li>
-                    <li><a href="mailto:info@sambandhsales.com" style="color: #fff;">info@sambandhsales.com</a></li>
-                    <li>+91 XXXXX XXXXX</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Architectural Newsletter</h3>
-                <form action="#">
-                    <input type="email" class="newsletter-input" placeholder="Your email address" required>
-                    <button type="submit" class="newsletter-btn">Subscribe</button>
-                </form>
-                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">Stay updated on new texture releases and material innovations.</p>
-            </div>
+            <div class="footer-col"><h3>Contact Desk</h3><ul><li>Vadodara, Gujarat</li><li><a href="mailto:info@sambandhsales.com" style="color:var(--text-dark); font-weight:700;">info@sambandhsales.com</a></li></ul></div>
+            <div class="footer-col"><h3>Newsletter</h3><form action="#"><input type="email" class="newsletter-input" required><button type="submit" class="newsletter-btn">Subscribe</button></form></div>
         </div>
-        <div class="footer-bottom">
-            <div>&copy; 2026 Sambandh Sales. All Rights Reserved.</div>
-            <div>Designed & Developed by Vishwakarma Cyber Technologies</div>
-        </div>
+        <div class="footer-bottom"><div>© 2026 Sambandh Sales. All Rights Reserved.</div><div>Developed by Vishwakarma Cyber Technologies</div></div>
     </footer>
 
     <script>
         const galleryContainer = document.getElementById('gallery-container');
-        
-        // 1. Create an array containing numbers 1 through 46
         let imageNumbers = [];
-        for (let i = 1; i <= 46; i++) {
-            imageNumbers.push(i);
-        }
-
-        // 2. Shuffle the array randomly (Fisher-Yates Shuffle Algorithm)
+        for (let i = 1; i <= 46; i++) imageNumbers.push(i);
         for (let i = imageNumbers.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [imageNumbers[i], imageNumbers[j]] = [imageNumbers[j], imageNumbers[i]];
         }
-        
-        // 3. Loop through the newly shuffled array to create the images
         imageNumbers.forEach((num, index) => {
             const div = document.createElement('div');
             div.className = 'gallery-item reveal';
-            
-            // Stagger the fade-in animation slightly based on its loaded order
             div.style.transitionDelay = `${(index % 5) * 0.1}s`;
-            
             const img = document.createElement('img');
-            img.src = `i${num}.png`;
-            img.alt = `Pre-Cast Concrete Panel Design ${num}`;
-            img.loading = "lazy"; 
-            
+            img.src = `i${num}.png`; img.loading = "lazy"; 
             const overlay = document.createElement('div');
-            overlay.className = 'gallery-overlay';
-            overlay.textContent = 'View Detail';
-
-            div.appendChild(img);
-            div.appendChild(overlay);
-            galleryContainer.appendChild(div);
+            overlay.className = 'gallery-overlay'; overlay.textContent = 'View Detail';
+            div.appendChild(img); div.appendChild(overlay); galleryContainer.appendChild(div);
         });
 
-        // Mobile Nav Toggle
         const hamburger = document.querySelector('.hamburger');
-        const nav = document.querySelector('nav');
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            nav.classList.toggle('active');
-        });
+        const nav = document.getElementById('mobile-nav');
+        hamburger.addEventListener('click', () => { nav.classList.toggle('active'); });
 
-        // Scroll Reveal Animation Script
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 50; 
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add("active");
-                }
+                if (reveals[i].getBoundingClientRect().top < window.innerHeight - 50) reveals[i].classList.add("active");
             }
         }
-        window.addEventListener("scroll", reveal);
-        setTimeout(reveal, 100); 
+        window.addEventListener("scroll", reveal); setTimeout(reveal, 100); 
     </script>
 </body>
 </html>
