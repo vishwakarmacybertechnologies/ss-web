@@ -34,7 +34,7 @@
 
         header { position: absolute; top: 15px; left: 2.5%; width: 95%; height: 75px; z-index: 1000; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
         .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
-        .logo img { max-height: 35px; }
+        .logo img { max-height: 35px; width: auto; }
         .logo-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
         
         nav ul { list-style: none; display: flex; gap: 35px; }
@@ -44,13 +44,12 @@
         .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; padding: 10px;}
         .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
 
-        /* MORE RESPONSIVE, SMALLER TOGGLE BUTTON */
+        /* MINIMALIST ARROW TOGGLE BUTTON */
         #config-toggle {
-            position: absolute; right: 2.5%; top: 105px; padding: 12px 20px; border-radius: 12px; cursor: pointer; z-index: 90; display: flex; align-items: center; gap: 10px; font-weight: 700; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.75rem; color: var(--text-dark); border: 1px solid rgba(255, 255, 255, 0.6); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: absolute; right: 2.5%; top: 105px; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; z-index: 90; display: flex; align-items: center; justify-content: center; color: var(--text-dark); border: 1px solid rgba(255, 255, 255, 0.6); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        #config-toggle:hover { background: rgba(255,255,255,0.7); transform: translateY(-2px); }
+        #config-toggle:hover { background: rgba(255,255,255,0.7); transform: scale(1.05); }
 
-        /* SLIMMER, COMPACT CONTROLS PANEL */
         .controls-panel { position: absolute; right: 2.5%; top: 105px; width: 320px; height: calc(100dvh - 120px); display: flex; flex-direction: column; z-index: 100; border-radius: 16px; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease; transform: translateX(0); }
         .controls-panel.closed { transform: translateX(calc(100% + 40px)); opacity: 0.5; pointer-events: none; }
         
@@ -58,8 +57,9 @@
         .panel-header h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 2px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);}
         .panel-header p { font-size: 0.7rem; color: #333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         
-        #close-config { background: none; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; color: var(--text-dark); opacity: 0.5; transition: opacity 0.3s; margin-top: -5px; }
-        #close-config:hover { opacity: 1; }
+        /* MINIMALIST CLOSE ARROW INSIDE PANEL */
+        #close-config { background: none; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dark); opacity: 0.5; transition: all 0.3s; margin-top: -5px; }
+        #close-config:hover { opacity: 1; transform: scale(1.1); }
 
         .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.6); padding: 0 25px; margin-top: 10px; flex-shrink: 0;}
         .tab-btn { flex: 1; background: transparent; border: none; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #444; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s;}
@@ -87,9 +87,11 @@
             .controls-panel { top: auto; bottom: 15px; right: 2.5%; left: 2.5%; width: 95%; height: auto; max-height: 45%; }
             .controls-panel.closed { transform: translateY(calc(100% + 40px)); }
             
-            /* Center the toggle button at the bottom for thumbs */
-            #config-toggle { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); padding: 14px 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
-            #config-toggle:hover { transform: translate(50%, -2px); }
+            #config-toggle { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); width: 50px; height: 50px; padding: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
+            #config-toggle:hover { transform: translateX(50%) scale(1.05); }
+            
+            /* Rotates arrows to point UP and DOWN on mobile */
+            #config-toggle svg, #close-config svg { transform: rotate(90deg); }
 
             .panel-header { padding: 15px 20px 5px; } .panel-header h1 { font-size: 1.4rem; }
             .tabs { padding: 0 20px; } .tab-content { padding: 15px 20px; }
@@ -100,12 +102,14 @@
             nav { position: fixed; top: 85px; left: -100%; width: 95%; height: calc(100dvh - 100px); border-radius: 16px; transition: left 0.3s ease; padding: 30px; z-index: 999; flex-direction: column; background: rgba(255,255,255,0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
             nav.active { left: 2.5%; }
             nav ul { flex-direction: column; gap: 20px; }
+            nav a { display: block; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; font-size: 1.2rem;}
         }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        
         <div class="view-area">
             <div id="loader">Loading Geometry...<div class="spinner"></div></div>
             <div id="canvas-container"></div>
@@ -114,7 +118,9 @@
 
         <header class="glass-fluted">
             <a href="index.html" class="logo"><img src="logo.png" alt="Sambandh Sales Logo"><span class="logo-text">Sambandh Sales</span></a>
-            <button class="hamburger"><span></span><span></span><span></span></button>
+            <button class="hamburger" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
             <nav id="mobile-nav">
                 <ul>
                     <li><a href="index.html">Home</a></li>
@@ -127,18 +133,21 @@
         </header>
 
         <button id="config-toggle" class="glass-fluted">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
-            Customize
         </button>
 
         <div class="controls-panel glass-fluted" id="controls-panel">
             <div class="panel-header">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div><h1>Configurator</h1><p>Interactive 3D Engine</p></div>
-                    <button id="close-config">×</button>
+                    
+                    <button id="close-config">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
                 </div>
             </div>
             
@@ -301,7 +310,6 @@
         function resizeCanvas() {
             renderer.setSize(window.innerWidth, window.innerHeight);
             camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-            // Perfectly shrunk color dial for the smaller panel
             if(colorPicker) colorPicker.resize(window.innerWidth < 400 ? 160 : 200);
         }
         window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 100);
