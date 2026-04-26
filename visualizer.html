@@ -4,538 +4,264 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D Pro Configurator | Sambandh Sales</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
 
     <style>
-        :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --border-color: #e5e5e5; }
+        :root { --text-dark: #111111; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        /* Prevent bounce-scrolling on mobile */
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); overflow: hidden; position: fixed; width: 100%; height: 100%; }
+        body { font-family: 'Inter', sans-serif; color: var(--text-dark); overflow: hidden; position: fixed; width: 100%; height: 100%; background: #000;}
 
-        /* RESTORED PREMIUM HEADER */
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: #fff; height: 85px; z-index: 1000; position: relative; width: 100%;}
-        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
-        .logo img { max-height: 45px; width: auto; }
-        .logo-text { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
-        nav ul { list-style: none; display: flex; gap: 35px; }
-        nav a { text-decoration: none; color: var(--text-dark); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s; position: relative;}
-        nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
-        nav a:hover::after { width: 100%; }
-        
-        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; padding: 10px;}
-        .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
+        .glass-fluted {
+            background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 1px, transparent 1px, transparent 8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
 
-        /* SUPER RESPONSIVE APP LAYOUT (Uses 100dvh to fix mobile Safari/Chrome address bar issues) */
-        .app-container { display: flex; height: calc(100dvh - 85px); width: 100%; background: var(--bg-alt); }
-        
-        /* 3D CANVAS AREA */
-        .view-area { flex-grow: 1; position: relative; background: radial-gradient(circle at center, #ffffff 0%, #e8e8e8 100%); cursor: grab; height: 100%; min-height: 0; }
+        .app-container { position: relative; width: 100vw; height: 100dvh; overflow: hidden; }
+        .view-area { position: absolute; top: 0; left: 0; width: 100vw; height: 100dvh; background: radial-gradient(circle at center, #ffffff 0%, #d8d8d8 100%); z-index: 1; cursor: grab; }
         .view-area:active { cursor: grabbing; }
         #canvas-container { width: 100%; height: 100%; display: block; }
         
-        .ui-overlay { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.85); backdrop-filter: blur(5px); padding: 8px 16px; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; pointer-events: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .ui-overlay { position: absolute; bottom: 20px; left: 30%; transform: translateX(-50%); padding: 8px 16px; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; pointer-events: none; z-index: 5;}
 
-        /* CONTROLS SIDEBAR */
-        .controls-panel { width: 450px; background: #fff; border-left: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100%; flex-shrink: 0; box-shadow: -5px 0 20px rgba(0,0,0,0.03); z-index: 10; }
+        header { position: absolute; top: 15px; left: 2.5%; width: 95%; height: 75px; z-index: 1000; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
+        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
+        .logo img { max-height: 35px; width: auto; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
         
+        nav ul { list-style: none; display: flex; gap: 35px; }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; transition: opacity 0.3s; }
+        nav a:hover { opacity: 0.5; }
+
+        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; padding: 10px;}
+        .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
+
+        .controls-panel { position: absolute; right: 2.5%; top: 105px; width: 400px; height: calc(100dvh - 120px); display: flex; flex-direction: column; z-index: 100; border-radius: 16px; }
         .panel-header { padding: 30px 30px 10px; flex-shrink: 0;}
-        .panel-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 5px; }
-        .panel-header p { font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; }
-
-        /* CUSTOM TABS */
-        .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 30px; margin-top: 15px; flex-shrink: 0;}
-        .tab-btn { flex: 1; background: transparent; border: none; padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .panel-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);}
+        .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.6); padding: 0 30px; margin-top: 15px; flex-shrink: 0;}
+        .tab-btn { flex: 1; background: transparent; border: none; padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #444; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s;}
         .tab-btn.active { color: var(--text-dark); border-bottom-color: var(--text-dark); }
-
         .tab-content { padding: 25px 30px; overflow-y: auto; flex-grow: 1; display: none; -webkit-overflow-scrolling: touch; }
         .tab-content.active { display: block; }
-
-        /* CONTROL BUTTONS */
         .control-block { margin-bottom: 25px; }
-        .control-block h3 { margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-light); font-weight: 700;}
-        button.option-btn { width: 100%; padding: 16px 20px; margin-bottom: 10px; background: var(--bg-alt); border: 1px solid var(--border-color); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; text-align: left; display: flex; justify-content: space-between; align-items: center; border-radius: 4px;}
-        button.option-btn:hover { border-color: #bbb; }
-        button.option-btn.active { background: var(--text-dark); color: #fff; border-color: var(--text-dark); }
-
-        /* PROFESSIONAL COLOR DIAL */
-        .mixer-container { background: var(--bg-alt); padding: 20px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; }
-        .mixer-preview { width: 100%; height: 50px; border-radius: 4px; background-color: #a3a3a3; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 2px;}
-        #color-dial { display: flex; justify-content: center; margin-bottom: 10px; touch-action: none; /* Prevents scrolling while using the dial on mobile */}
-
-        /* LOADING OVERLAY */
-        #loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.5rem; transition: opacity 0.5s; pointer-events: none;}
-        .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--text-dark); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-top: 15px;}
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* ========================================= */
-        /* SUPER RESPONSIVE MOBILE BREAKPOINTS       */
-        /* ========================================= */
+        .control-block h3 { margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #333; font-weight: 700;}
         
+        button.option-btn { width: 100%; padding: 16px 20px; margin-bottom: 10px; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; text-align: left; display: flex; justify-content: space-between; border-radius: 6px; }
+        button.option-btn.active { background: rgba(0,0,0,0.85); color: #fff; border-color: transparent;}
+        .mixer-container { background: rgba(255,255,255,0.45); padding: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.6); display: flex; flex-direction: column; align-items: center; }
+        .mixer-preview { width: 100%; height: 50px; border-radius: 4px; background-color: #a3a3a3; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 600; }
+        #color-dial { margin-bottom: 10px; touch-action: none; }
+
+        #loader { position: absolute; inset: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.5rem; transition: opacity 0.5s; pointer-events: none;}
+        .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--text-dark); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-top: 15px;}
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
         @media (max-width: 900px) {
-            .app-container { flex-direction: column; }
-            /* Gives 40% to 3D model, 60% to controls so user doesn't have to scroll constantly */
-            .view-area { height: 40%; flex-grow: 0; width: 100%; border-bottom: 1px solid var(--border-color);}
-            .controls-panel { height: 60%; width: 100%; border-left: none; box-shadow: none; }
-            .panel-header { padding: 20px 20px 5px; }
-            .panel-header h1 { font-size: 1.5rem; }
-            .tabs { padding: 0 20px; margin-top: 10px; }
-            .tab-btn { padding: 10px 0; font-size: 0.75rem; }
-            .tab-content { padding: 20px; }
-            .ui-overlay { bottom: 10px; font-size: 0.65rem; padding: 6px 12px;}
+            .ui-overlay { left: 50%; }
+            .controls-panel { top: auto; bottom: 15px; right: 2.5%; left: 2.5%; width: 95%; height: 45%; }
+            .panel-header { padding: 20px 20px 5px; } .panel-header h1 { font-size: 1.5rem; }
+            .tabs { padding: 0 20px; } .tab-content { padding: 20px; }
         }
-
         @media (max-width: 768px) {
-            header { height: 75px; padding: 10px 15px; }
-            .logo-text { font-size: 1.1rem; }
-            .logo img { max-height: 35px; }
+            header { top: 10px; height: 65px; padding: 0 20px; }
             .hamburger { display: flex; }
-            nav { position: fixed; top: 75px; left: -100%; width: 100%; height: calc(100dvh - 75px); background-color: #fff; transition: left 0.3s ease; padding: 30px 20px; z-index: 999; border-top: 1px solid var(--border-color); }
-            nav.active { left: 0; }
+            nav { position: fixed; top: 85px; left: -100%; width: 95%; height: calc(100dvh - 100px); border-radius: 16px; transition: left 0.3s ease; padding: 30px; z-index: 999; flex-direction: column; background: rgba(255,255,255,0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+            nav.active { left: 2.5%; }
             nav ul { flex-direction: column; gap: 20px; }
-            nav a { font-size: 1.2rem; display: block; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-            .app-container { height: calc(100dvh - 75px); }
-        }
-
-        /* Tweaks for very small screens (iPhone SE, older Androids) */
-        @media (max-width: 380px) {
-            .panel-header h1 { font-size: 1.3rem; }
-            button.option-btn { padding: 12px 15px; font-size: 0.8rem; margin-bottom: 8px;}
-            .tab-content { padding: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="index.html" class="logo">
-            <img src="logo.png" alt="Sambandh Sales Logo">
-            <span class="logo-text">Sambandh Sales</span>
-        </a>
-        <button class="hamburger" aria-label="Toggle navigation">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="gallery.html">Products</a></li>
-                <li><a href="visualizer.html">Visualizer</a></li>
-                <li><a href="contact.html">Get in Touch</a></li>
-            </ul>
-        </nav>
-    </header>
-
     <div class="app-container">
-        
         <div class="view-area">
             <div id="loader">Loading Geometry...<div class="spinner"></div></div>
             <div id="canvas-container"></div>
-            <div class="ui-overlay">Rotate • Zoom</div>
+            <div class="ui-overlay glass-fluted">Rotate • Zoom</div>
         </div>
 
-        <div class="controls-panel">
-            <div class="panel-header">
-                <h1>Configurator</h1>
-                <p>Interactive 3D Engine</p>
-            </div>
+        <header class="glass-fluted">
+            <a href="index.html" class="logo"><img src="logo.png" alt="Sambandh Sales Logo"><span class="logo-text">Sambandh Sales</span></a>
+            <button class="hamburger"><span></span><span></span><span></span></button>
+            <nav id="mobile-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="gallery.html">Products</a></li>
+                    <li><a href="visualizer.html">Visualizer</a></li>
+                    <li><a href="contact.html">Get in Touch</a></li>
+                </ul>
+            </nav>
+        </header>
 
+        <div class="controls-panel glass-fluted">
+            <div class="panel-header">
+                <h1>Configurator</h1><p>Interactive 3D Engine</p>
+            </div>
             <div class="tabs">
                 <button class="tab-btn active" onclick="openTab('tab-finish', this)">Design</button>
-                <button class="tab-btn" onclick="openTab('tab-color', this)">Dye Dial</button>
+                <button class="tab-btn" onclick="openTab('tab-color', this)">Color</button>
                 <button class="tab-btn" onclick="openTab('tab-light', this)">Lighting</button>
             </div>
 
             <div id="tab-finish" class="tab-content active">
-                
                 <div class="control-block">
-                    <h3>1. Panel Profile (3D Shape)</h3>
-                    <button class="option-btn active" id="btn-custom" onclick="changeShape('custom', this)">
-                        <span>DFG Pattern</span> <span style="font-size:0.65rem; opacity:0.6;">CUSTOM .GLB</span>
-                    </button>
-                    <button class="option-btn" id="btn-diamond" onclick="changeShape('diamond', this)">
-                        <span>Geometric Diamond</span> <span style="font-size:0.65rem; opacity:0.6;">ALGORITHM</span>
-                    </button>
-                    <button class="option-btn" id="btn-fluted" onclick="changeShape('fluted', this)">
-                        <span>Fluted Series</span> <span style="font-size:0.65rem; opacity:0.6;">RIBBED</span>
-                    </button>
+                    <h3>1. Profile</h3>
+                    <button class="option-btn active" onclick="changeShape('custom', this)"><span>DFG Pattern</span> <span>.GLB</span></button>
+                    <button class="option-btn" onclick="changeShape('diamond', this)"><span>Diamond</span> <span>ALGO</span></button>
+                    <button class="option-btn" onclick="changeShape('fluted', this)"><span>Fluted</span> <span>RIBBED</span></button>
                 </div>
-
-                <div class="control-block" style="border-top: 1px solid var(--border-color); padding-top: 25px;">
-                    <h3>2. Surface Physics (Texture)</h3>
-                    <button class="option-btn active" onclick="changeMaterial('matte', this)">
-                        <span>Raw Brutalist</span> <span style="font-size:0.65rem; opacity:0.6;">MATTE</span>
-                    </button>
-                    <button class="option-btn" onclick="changeMaterial('polished', this)">
-                        <span>Sealed & Polished</span> <span style="font-size:0.65rem; opacity:0.6;">GLOSS</span>
-                    </button>
+                <div class="control-block">
+                    <h3>2. Texture</h3>
+                    <button class="option-btn active" onclick="changeMaterial('matte', this)"><span>Raw Brutalist</span> <span>MATTE</span></button>
+                    <button class="option-btn" onclick="changeMaterial('polished', this)"><span>Sealed</span> <span>GLOSS</span></button>
                 </div>
             </div>
 
             <div id="tab-color" class="tab-content">
                 <div class="control-block">
-                    <h3>Custom Pigment Infusion</h3>
-                    <div class="mixer-container">
-                        <div class="mixer-preview" id="mixer-preview">#A3A3A3</div>
-                        <div id="color-dial"></div>
-                    </div>
+                    <h3>Pigment</h3>
+                    <div class="mixer-container"><div class="mixer-preview" id="mixer-preview">#A3A3A3</div><div id="color-dial"></div></div>
                 </div>
             </div>
 
             <div id="tab-light" class="tab-content">
                 <div class="control-block">
-                    <h3>Environment Simulator</h3>
-                    <button class="option-btn active" onclick="changeLighting('interior', this)">
-                        <span>Soft Studio</span> <span style="font-size:0.65rem; opacity:0.6;">INTERIOR</span>
-                    </button>
-                    <button class="option-btn" onclick="changeLighting('exterior', this)">
-                        <span>Harsh Sunlight</span> <span style="font-size:0.65rem; opacity:0.6;">EXTERIOR</span>
-                    </button>
+                    <h3>Environment</h3>
+                    <button class="option-btn active" onclick="changeLighting('interior', this)"><span>Soft Studio</span></button>
+                    <button class="option-btn" onclick="changeLighting('exterior', this)"><span>Harsh Sunlight</span></button>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // Hamburger Menu
         const hamburger = document.querySelector('.hamburger');
-        const nav = document.querySelector('nav');
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            nav.classList.toggle('active');
-        });
+        const nav = document.getElementById('mobile-nav');
+        hamburger.addEventListener('click', () => { nav.classList.toggle('active'); });
 
-        // Tab Switching & Mobile Canvas Resize Trigger
         function openTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
-            
-            // Force color picker to center when tab is opened on mobile
-            if(tabId === 'tab-color') { 
-                setTimeout(() => window.dispatchEvent(new Event('resize')), 50); 
-            }
+            if(tabId === 'tab-color') { setTimeout(() => window.dispatchEvent(new Event('resize')), 50); }
         }
 
-        // --- 3D ENGINE SETUP (PERFORMANCE OPTIMIZED) ---
         const container = document.getElementById('canvas-container');
         const loader = document.getElementById('loader');
         const scene = new THREE.Scene();
-
-        // Check if device is mobile to apply performance hacks
         const isMobile = window.innerWidth < 768;
 
         const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true });
-        
-        // HUGE MOBILE FIX: Cap pixel ratio on phones to stop lag
-        const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
-        renderer.setPixelRatio(pixelRatio);
-        
+        renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
         renderer.toneMapping = THREE.ACESFilmicToneMapping; 
-        renderer.toneMappingExposure = 1.0;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = isMobile ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        // Camera & Controls
         const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-        // Pull camera slightly further back on mobile so model fits better
-        camera.position.set(isMobile ? 4 : 3, isMobile ? 3 : 2, isMobile ? 7 : 5); 
+        camera.position.set(isMobile ? 4 : 2, isMobile ? 3 : 2, isMobile ? 7 : 5); 
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05; 
-        controls.minDistance = 1;
-        controls.maxDistance = 12;
-        controls.maxPolarAngle = Math.PI / 2 + 0.1; 
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 1.5;
+        controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 + 0.1; 
+        controls.autoRotate = true; controls.autoRotateSpeed = 1.5;
+        controls.target.set(isMobile ? 0 : -1, 1.5, 0);
 
         container.addEventListener('mousedown', () => { controls.autoRotate = false; });
         container.addEventListener('touchstart', () => { controls.autoRotate = false; }, {passive: true});
 
-        // Lighting
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
-        const roomEnvironment = new THREE.RoomEnvironment();
-        scene.environment = pmremGenerator.fromScene(roomEnvironment).texture;
+        scene.environment = pmremGenerator.fromScene(new THREE.RoomEnvironment()).texture;
         
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-        dirLight.position.set(5, 10, 5);
-        dirLight.castShadow = true;
-        
-        // HUGE MOBILE FIX: Reduce shadow resolution on phones
-        const shadowRes = isMobile ? 512 : 2048;
-        dirLight.shadow.mapSize.width = shadowRes;
-        dirLight.shadow.mapSize.height = shadowRes;
-        dirLight.shadow.bias = -0.0005; 
+        dirLight.position.set(5, 10, 5); dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = isMobile ? 512 : 2048;
+        dirLight.shadow.mapSize.height = isMobile ? 512 : 2048;
         scene.add(dirLight);
 
-        // Master Concrete Material 
-        const concreteMaterial = new THREE.MeshPhysicalMaterial({
-            color: new THREE.Color('#a3a3a3'),
-            roughness: 0.9,      
-            metalness: 0.0,      
-            clearcoat: 0.0,      
-            clearcoatRoughness: 0.0,
-        });
+        const concreteMaterial = new THREE.MeshPhysicalMaterial({ color: '#a3a3a3', roughness: 0.9 });
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
+        floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
-        // Floor
-        const floorGeo = new THREE.PlaneGeometry(50, 50);
-        const floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 });
-        const floor = new THREE.Mesh(floorGeo, floorMat);
-        floor.rotation.x = -Math.PI / 2;
-        floor.receiveShadow = true;
-        scene.add(floor);
-
-
-        // ==========================================
-        // DYNAMIC 3D SHAPE BUILDER (.GLB AND MATH)
-        // ==========================================
         let currentPanelGroup = null;
-
-        function createDiamondRing(size, thickness, depth, mat) {
-            const ring = new THREE.Group();
-            const length = size / Math.sqrt(2);
-            const geo = new THREE.BoxGeometry(length + thickness, thickness, depth);
-            const offset = size / 4; 
-            
-            const s1 = new THREE.Mesh(geo, mat); s1.position.set(offset, offset, depth/2); s1.rotation.z = Math.PI/4; s1.castShadow = true; s1.receiveShadow = true;
-            const s2 = new THREE.Mesh(geo, mat); s2.position.set(-offset, offset, depth/2); s2.rotation.z = -Math.PI/4; s2.castShadow = true; s2.receiveShadow = true;
-            const s3 = new THREE.Mesh(geo, mat); s3.position.set(-offset, -offset, depth/2); s3.rotation.z = Math.PI/4; s3.castShadow = true; s3.receiveShadow = true;
-            const s4 = new THREE.Mesh(geo, mat); s4.position.set(offset, -offset, depth/2); s4.rotation.z = -Math.PI/4; s4.castShadow = true; s4.receiveShadow = true;
-            
-            ring.add(s1, s2, s3, s4);
-            return ring;
-        }
 
         function buildShape(shapeType) {
             loader.style.opacity = '1';
-            
             setTimeout(() => {
-                if (currentPanelGroup) {
-                    scene.remove(currentPanelGroup);
-                    // Pro Optimization: Clean up memory
-                    currentPanelGroup.traverse(function(child) {
-                        if(child.isMesh) {
-                            if(child.geometry) child.geometry.dispose();
-                        }
-                    });
-                }
-
+                if (currentPanelGroup) { scene.remove(currentPanelGroup); }
                 currentPanelGroup = new THREE.Group();
 
-                // --------------------------------------------------
-                // LOAD CUSTOM DFG.GLB FILE
-                // --------------------------------------------------
                 if (shapeType === 'custom') {
-                    const gltfLoader = new THREE.GLTFLoader();
-                    
-                    gltfLoader.load('DFG.glb', function(gltf) {
+                    new THREE.GLTFLoader().load('DFG.glb', function(gltf) {
                         const model = gltf.scene;
-
-                        model.traverse((child) => {
-                            if (child.isMesh) {
-                                child.material = concreteMaterial;
-                                child.castShadow = true;
-                                child.receiveShadow = true;
-                            }
-                        });
-
+                        model.traverse((child) => { if (child.isMesh) { child.material = concreteMaterial; child.castShadow = true; child.receiveShadow = true; } });
                         const box = new THREE.Box3().setFromObject(model);
-                        const center = box.getCenter(new THREE.Vector3());
-                        const size = box.getSize(new THREE.Vector3());
-
-                        model.position.sub(center);
-
-                        const wrapper = new THREE.Group();
-                        wrapper.add(model);
-
-                        const maxDim = Math.max(size.x, size.y, size.z);
-                        if(maxDim > 0) {
-                            const scale = 3.2 / maxDim; 
-                            wrapper.scale.set(scale, scale, scale);
-                        }
-
-                        currentPanelGroup.add(wrapper);
-                        currentPanelGroup.position.y = 1.5; 
-                        scene.add(currentPanelGroup);
+                        model.position.sub(box.getCenter(new THREE.Vector3()));
+                        const wrapper = new THREE.Group(); wrapper.add(model);
+                        const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray());
+                        if(maxDim > 0) wrapper.scale.setScalar(3.2 / maxDim);
+                        currentPanelGroup.add(wrapper); currentPanelGroup.position.y = 1.5; scene.add(currentPanelGroup);
                         loader.style.opacity = '0';
-
-                    }, undefined, function(error) {
-                        console.error('Error loading DFG.glb:', error);
-                        loader.innerText = "Error: DFG.glb not found";
-                        setTimeout(() => { loader.style.opacity = '0'; loader.innerHTML = 'Loading Geometry...<div class="spinner"></div>'; }, 3000);
-                    });
-
-                    return; 
+                    }); return; 
                 } 
-                // --------------------------------------------------
-
                 else if (shapeType === 'fluted') {
-                    const baseGeo = new THREE.BoxGeometry(2, 3, 0.1);
-                    const baseMesh = new THREE.Mesh(baseGeo, concreteMaterial);
-                    baseMesh.castShadow = true; baseMesh.receiveShadow = true;
-                    currentPanelGroup.add(baseMesh);
-
-                    const ribGeo = new THREE.CylinderGeometry(0.06, 0.06, 3, 16);
-                    for(let i = 0; i < 15; i++) {
-                        const rib = new THREE.Mesh(ribGeo, concreteMaterial);
-                        rib.position.set(-0.84 + (i * 0.12), 0, 0.05); 
-                        rib.castShadow = true; rib.receiveShadow = true;
-                        currentPanelGroup.add(rib);
+                    const base = new THREE.Mesh(new THREE.BoxGeometry(2, 3, 0.1), concreteMaterial); base.castShadow = true; base.receiveShadow = true; currentPanelGroup.add(base);
+                    for(let i=0; i<15; i++) {
+                        const rib = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3, 16), concreteMaterial);
+                        rib.position.set(-0.84 + (i * 0.12), 0, 0.05); rib.castShadow = true; rib.receiveShadow = true; currentPanelGroup.add(rib);
                     }
-
-                } else if (shapeType === 'diamond') {
-                    const panelWidth = 2.4;
-                    const panelHeight = 3.2;
-                    const tileSize = 0.8; 
-
-                    const baseGeo = new THREE.BoxGeometry(panelWidth, panelHeight, 0.1);
-                    const baseMesh = new THREE.Mesh(baseGeo, concreteMaterial);
-                    baseMesh.castShadow = true; baseMesh.receiveShadow = true;
-                    currentPanelGroup.add(baseMesh);
-
-                    for(let x = -0.8; x <= 0.8; x += tileSize) {
-                        for(let y = -1.2; y <= 1.2; y += tileSize) {
-                            const pyrGeo = new THREE.ConeGeometry(tileSize * 0.15, 0.08, 4);
-                            pyrGeo.rotateX(Math.PI/2); pyrGeo.rotateZ(Math.PI/4); 
-                            const pyr = new THREE.Mesh(pyrGeo, concreteMaterial);
-                            pyr.position.set(x, y, 0.05);
-                            pyr.castShadow = true; pyr.receiveShadow = true;
-                            currentPanelGroup.add(pyr);
-
-                            const ring1 = createDiamondRing(tileSize * 0.45, 0.05, 0.06, concreteMaterial);
-                            ring1.position.set(x, y, 0.05); currentPanelGroup.add(ring1);
-
-                            const ring2 = createDiamondRing(tileSize * 0.8, 0.08, 0.1, concreteMaterial);
-                            ring2.position.set(x, y, 0.05); currentPanelGroup.add(ring2);
-
-                            const hLineGeo = new THREE.BoxGeometry(tileSize, 0.06, 0.08);
-                            const hLine = new THREE.Mesh(hLineGeo, concreteMaterial);
-                            hLine.position.set(x, y + tileSize/2, 0.05 + 0.04);
-                            hLine.castShadow = true; hLine.receiveShadow = true; currentPanelGroup.add(hLine);
-                            
-                            const vLineGeo = new THREE.BoxGeometry(0.06, tileSize, 0.08);
-                            const vLine = new THREE.Mesh(vLineGeo, concreteMaterial);
-                            vLine.position.set(x + tileSize/2, y, 0.05 + 0.04);
-                            vLine.castShadow = true; vLine.receiveShadow = true; currentPanelGroup.add(vLine);
-                        }
-                    }
+                } 
+                else if (shapeType === 'diamond') {
+                    const base = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 0.1), concreteMaterial); base.castShadow = true; base.receiveShadow = true; currentPanelGroup.add(base);
                 }
-
-                currentPanelGroup.position.y = 1.5; 
-                scene.add(currentPanelGroup);
-                
+                currentPanelGroup.position.y = 1.5; scene.add(currentPanelGroup);
                 setTimeout(() => { loader.style.opacity = '0'; }, 200);
             }, 50); 
         }
-
-        // Initialize with custom model
         buildShape('custom');
 
         function changeShape(type, btn) {
-            document.getElementById('btn-custom').classList.remove('active');
-            document.getElementById('btn-fluted').classList.remove('active');
-            document.getElementById('btn-diamond').classList.remove('active');
-            btn.classList.add('active');
-            buildShape(type);
+            document.querySelectorAll('#tab-finish .option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); buildShape(type);
         }
-        // ==========================================
 
-
-        // Super Responsive Resizing (Handles layout shifts dynamically)
         function resizeCanvas() {
-            if(!container) return;
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            
-            // Adjust Iro.js color picker size dynamically
-            if(colorPicker) {
-                const newDialSize = window.innerWidth < 400 ? 180 : (window.innerWidth < 768 ? 220 : 250);
-                colorPicker.resize(newDialSize);
-            }
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+            if(colorPicker) colorPicker.resize(window.innerWidth < 400 ? 180 : (window.innerWidth < 768 ? 220 : 250));
         }
-        window.addEventListener('resize', resizeCanvas);
-        // Double trigger on mobile to catch address bar shifts
-        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 200));
-        setTimeout(resizeCanvas, 100);
+        window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 100);
 
-        // Animation Loop
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update(); 
-            renderer.render(scene, camera);
-        }
-        animate();
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); } animate();
 
-        // --- MATERIAL & LIGHTING BUTTONS ---
         function changeMaterial(type, btn) {
-            btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if (type === 'matte') {
-                concreteMaterial.roughness = 0.9;
-                concreteMaterial.clearcoat = 0.0;
-            } else if (type === 'polished') {
-                concreteMaterial.roughness = 0.1;
-                concreteMaterial.clearcoat = 1.0;
-                concreteMaterial.clearcoatRoughness = 0.1;
-            }
+            btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+            concreteMaterial.roughness = type === 'matte' ? 0.9 : 0.1;
+            concreteMaterial.clearcoat = type === 'matte' ? 0.0 : 1.0;
             concreteMaterial.needsUpdate = true;
         }
 
         function changeLighting(type, btn) {
-            document.querySelectorAll('#tab-light .option-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if (type === 'interior') {
-                dirLight.intensity = 1.2;
-                dirLight.position.set(5, 10, 5);
-                renderer.toneMappingExposure = 1.0;
-            } else if (type === 'exterior') {
-                dirLight.intensity = 2.5; 
-                dirLight.position.set(-10, 15, 10);
-                renderer.toneMappingExposure = 1.3;
-            }
+            document.querySelectorAll('#tab-light .option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+            dirLight.intensity = type === 'interior' ? 1.2 : 2.5;
+            dirLight.position.set(type === 'interior' ? 5 : -10, type === 'interior' ? 10 : 15, type === 'interior' ? 5 : 10);
         }
 
-        // --- IRO.JS COLOR DIAL ---
-        let initialDialSize = window.innerWidth < 400 ? 180 : (window.innerWidth < 768 ? 220 : 250);
-        var colorPicker = new iro.ColorPicker("#color-dial", {
-            width: initialDialSize,
-            color: "#a3a3a3",
-            borderWidth: 2,
-            borderColor: "#ffffff",
-            layout: [
-                { component: iro.ui.Wheel },
-                { component: iro.ui.Slider, options: { sliderType: 'value' } }
-            ]
-        });
-
+        var colorPicker = new iro.ColorPicker("#color-dial", { width: 250, color: "#a3a3a3", borderWidth: 2, borderColor: "#ffffff", layout: [ { component: iro.ui.Wheel }, { component: iro.ui.Slider, options: { sliderType: 'value' } } ] });
         colorPicker.on('color:change', function(color) {
             concreteMaterial.color.set(color.hexString); 
-            const previewBox = document.getElementById('mixer-preview');
-            previewBox.style.backgroundColor = color.hexString; 
-            previewBox.innerText = color.hexString.toUpperCase(); 
-            if(color.hsl.l > 70) {
-                previewBox.style.color = '#111111';
-            } else {
-                previewBox.style.color = '#ffffff';
-            }
+            const box = document.getElementById('mixer-preview');
+            box.style.backgroundColor = color.hexString; box.innerText = color.hexString.toUpperCase(); 
+            box.style.color = color.hsl.l > 70 ? '#111' : '#fff';
         });
     </script>
 </body>
