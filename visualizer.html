@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D Pro Configurator | Sambandh Sales</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
     
@@ -17,10 +17,11 @@
     <style>
         :root { --bg-color: #ffffff; --bg-alt: #f7f7f5; --text-dark: #111111; --text-light: #555555; --border-color: #e5e5e5; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); overflow: hidden; }
+        /* Prevent bounce-scrolling on mobile */
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); overflow: hidden; position: fixed; width: 100%; height: 100%; }
 
         /* RESTORED PREMIUM HEADER */
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: #fff; height: 85px; z-index: 1000; position: relative;}
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background-color: #fff; height: 85px; z-index: 1000; position: relative; width: 100%;}
         .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
         .logo img { max-height: 45px; width: auto; }
         .logo-text { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
@@ -29,14 +30,14 @@
         nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background: var(--text-dark); transition: width 0.3s; }
         nav a:hover::after { width: 100%; }
         
-        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; }
+        .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; padding: 10px;}
         .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
 
-        /* APP LAYOUT */
-        .app-container { display: flex; height: calc(100vh - 85px); width: 100%; background: var(--bg-alt); }
+        /* SUPER RESPONSIVE APP LAYOUT (Uses 100dvh to fix mobile Safari/Chrome address bar issues) */
+        .app-container { display: flex; height: calc(100dvh - 85px); width: 100%; background: var(--bg-alt); }
         
         /* 3D CANVAS AREA */
-        .view-area { flex-grow: 1; position: relative; background: radial-gradient(circle at center, #ffffff 0%, #e8e8e8 100%); cursor: grab; height: 100%; }
+        .view-area { flex-grow: 1; position: relative; background: radial-gradient(circle at center, #ffffff 0%, #e8e8e8 100%); cursor: grab; height: 100%; min-height: 0; }
         .view-area:active { cursor: grabbing; }
         #canvas-container { width: 100%; height: 100%; display: block; }
         
@@ -45,57 +46,69 @@
         /* CONTROLS SIDEBAR */
         .controls-panel { width: 450px; background: #fff; border-left: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100%; flex-shrink: 0; box-shadow: -5px 0 20px rgba(0,0,0,0.03); z-index: 10; }
         
-        .panel-header { padding: 30px 30px 10px; }
+        .panel-header { padding: 30px 30px 10px; flex-shrink: 0;}
         .panel-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 5px; }
         .panel-header p { font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; }
 
         /* CUSTOM TABS */
-        .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 30px; margin-top: 20px; }
+        .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 30px; margin-top: 15px; flex-shrink: 0;}
         .tab-btn { flex: 1; background: transparent; border: none; padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
         .tab-btn.active { color: var(--text-dark); border-bottom-color: var(--text-dark); }
 
-        .tab-content { padding: 30px; overflow-y: auto; flex-grow: 1; display: none; }
+        .tab-content { padding: 25px 30px; overflow-y: auto; flex-grow: 1; display: none; -webkit-overflow-scrolling: touch; }
         .tab-content.active { display: block; }
 
         /* CONTROL BUTTONS */
-        .control-block { margin-bottom: 30px; }
-        .control-block h3 { margin-bottom: 15px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-light); font-weight: 700;}
-        button.option-btn { width: 100%; padding: 16px 20px; margin-bottom: 12px; background: var(--bg-alt); border: 1px solid var(--border-color); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; text-align: left; display: flex; justify-content: space-between; align-items: center; border-radius: 4px;}
+        .control-block { margin-bottom: 25px; }
+        .control-block h3 { margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-light); font-weight: 700;}
+        button.option-btn { width: 100%; padding: 16px 20px; margin-bottom: 10px; background: var(--bg-alt); border: 1px solid var(--border-color); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; text-align: left; display: flex; justify-content: space-between; align-items: center; border-radius: 4px;}
         button.option-btn:hover { border-color: #bbb; }
         button.option-btn.active { background: var(--text-dark); color: #fff; border-color: var(--text-dark); }
 
         /* PROFESSIONAL COLOR DIAL */
         .mixer-container { background: var(--bg-alt); padding: 20px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; }
-        .mixer-preview { width: 100%; height: 50px; border-radius: 4px; background-color: #a3a3a3; margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 2px;}
-        #color-dial { display: flex; justify-content: center; margin-bottom: 15px;}
+        .mixer-preview { width: 100%; height: 50px; border-radius: 4px; background-color: #a3a3a3; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 2px;}
+        #color-dial { display: flex; justify-content: center; margin-bottom: 10px; touch-action: none; /* Prevents scrolling while using the dial on mobile */}
 
         /* LOADING OVERLAY */
         #loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.5rem; transition: opacity 0.5s; pointer-events: none;}
         .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--text-dark); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-top: 15px;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* MOBILE RESPONSIVENESS */
+        /* ========================================= */
+        /* SUPER RESPONSIVE MOBILE BREAKPOINTS       */
+        /* ========================================= */
+        
         @media (max-width: 900px) {
-            body { overflow: hidden; } 
             .app-container { flex-direction: column; }
-            .view-area { height: 45%; flex-grow: 0; width: 100%; }
-            .controls-panel { height: 55%; width: 100%; border-left: none; border-top: 1px solid var(--border-color); box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-            .panel-header { padding: 20px 20px 0; }
+            /* Gives 40% to 3D model, 60% to controls so user doesn't have to scroll constantly */
+            .view-area { height: 40%; flex-grow: 0; width: 100%; border-bottom: 1px solid var(--border-color);}
+            .controls-panel { height: 60%; width: 100%; border-left: none; box-shadow: none; }
+            .panel-header { padding: 20px 20px 5px; }
             .panel-header h1 { font-size: 1.5rem; }
-            .tabs { padding: 0 20px; margin-top: 15px; }
+            .tabs { padding: 0 20px; margin-top: 10px; }
             .tab-btn { padding: 10px 0; font-size: 0.75rem; }
             .tab-content { padding: 20px; }
+            .ui-overlay { bottom: 10px; font-size: 0.65rem; padding: 6px 12px;}
         }
+
         @media (max-width: 768px) {
-            header { height: 80px; }
-            .logo-text { font-size: 1rem; }
+            header { height: 75px; padding: 10px 15px; }
+            .logo-text { font-size: 1.1rem; }
             .logo img { max-height: 35px; }
             .hamburger { display: flex; }
-            nav { position: fixed; top: 80px; left: -100%; width: 100%; height: calc(100vh - 80px); background-color: #fff; transition: left 0.3s ease; padding: 40px 20px; z-index: 999; border-top: 1px solid var(--border-color); }
+            nav { position: fixed; top: 75px; left: -100%; width: 100%; height: calc(100dvh - 75px); background-color: #fff; transition: left 0.3s ease; padding: 30px 20px; z-index: 999; border-top: 1px solid var(--border-color); }
             nav.active { left: 0; }
             nav ul { flex-direction: column; gap: 20px; }
             nav a { font-size: 1.2rem; display: block; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-            .app-container { height: calc(100vh - 80px); }
+            .app-container { height: calc(100dvh - 75px); }
+        }
+
+        /* Tweaks for very small screens (iPhone SE, older Androids) */
+        @media (max-width: 380px) {
+            .panel-header h1 { font-size: 1.3rem; }
+            button.option-btn { padding: 12px 15px; font-size: 0.8rem; margin-bottom: 8px;}
+            .tab-content { padding: 15px; }
         }
     </style>
 </head>
@@ -123,6 +136,7 @@
     </header>
 
     <div class="app-container">
+        
         <div class="view-area">
             <div id="loader">Loading Geometry...<div class="spinner"></div></div>
             <div id="canvas-container"></div>
@@ -156,7 +170,7 @@
                     </button>
                 </div>
 
-                <div class="control-block" style="border-top: 1px solid var(--border-color); padding-top: 30px;">
+                <div class="control-block" style="border-top: 1px solid var(--border-color); padding-top: 25px;">
                     <h3>2. Surface Physics (Texture)</h3>
                     <button class="option-btn active" onclick="changeMaterial('matte', this)">
                         <span>Raw Brutalist</span> <span style="font-size:0.65rem; opacity:0.6;">MATTE</span>
@@ -201,13 +215,17 @@
             nav.classList.toggle('active');
         });
 
-        // Tab Switching
+        // Tab Switching & Mobile Canvas Resize Trigger
         function openTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
-            if(tabId === 'tab-color') { window.dispatchEvent(new Event('resize')); }
+            
+            // Force color picker to center when tab is opened on mobile
+            if(tabId === 'tab-color') { 
+                setTimeout(() => window.dispatchEvent(new Event('resize')), 50); 
+            }
         }
 
         // --- 3D ENGINE SETUP (PERFORMANCE OPTIMIZED) ---
@@ -227,13 +245,13 @@
         renderer.toneMapping = THREE.ACESFilmicToneMapping; 
         renderer.toneMappingExposure = 1.0;
         renderer.shadowMap.enabled = true;
-        // Optimization: Use basic shadows on mobile instead of heavy soft shadows
         renderer.shadowMap.type = isMobile ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
         // Camera & Controls
         const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-        camera.position.set(3, 2, 5); 
+        // Pull camera slightly further back on mobile so model fits better
+        camera.position.set(isMobile ? 4 : 3, isMobile ? 3 : 2, isMobile ? 7 : 5); 
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
@@ -245,7 +263,7 @@
         controls.autoRotateSpeed = 1.5;
 
         container.addEventListener('mousedown', () => { controls.autoRotate = false; });
-        container.addEventListener('touchstart', () => { controls.autoRotate = false; });
+        container.addEventListener('touchstart', () => { controls.autoRotate = false; }, {passive: true});
 
         // Lighting
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -277,7 +295,6 @@
         const floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 });
         const floor = new THREE.Mesh(floorGeo, floorMat);
         floor.rotation.x = -Math.PI / 2;
-        // Optimization: Turn off shadow receiving on the floor for mobile if needed, but keeping it for now
         floor.receiveShadow = true;
         scene.add(floor);
 
@@ -437,15 +454,24 @@
         // ==========================================
 
 
-        // Responsive Resizing
+        // Super Responsive Resizing (Handles layout shifts dynamically)
         function resizeCanvas() {
+            if(!container) return;
             const width = container.clientWidth;
             const height = container.clientHeight;
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
+            
+            // Adjust Iro.js color picker size dynamically
+            if(colorPicker) {
+                const newDialSize = window.innerWidth < 400 ? 180 : (window.innerWidth < 768 ? 220 : 250);
+                colorPicker.resize(newDialSize);
+            }
         }
         window.addEventListener('resize', resizeCanvas);
+        // Double trigger on mobile to catch address bar shifts
+        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 200));
         setTimeout(resizeCanvas, 100);
 
         // Animation Loop
@@ -488,9 +514,9 @@
         }
 
         // --- IRO.JS COLOR DIAL ---
-        let dialSize = window.innerWidth < 768 ? 200 : 250;
+        let initialDialSize = window.innerWidth < 400 ? 180 : (window.innerWidth < 768 ? 220 : 250);
         var colorPicker = new iro.ColorPicker("#color-dial", {
-            width: dialSize,
+            width: initialDialSize,
             color: "#a3a3a3",
             borderWidth: 2,
             borderColor: "#ffffff",
