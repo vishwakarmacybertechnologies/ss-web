@@ -32,40 +32,38 @@
         
         .ui-overlay { position: absolute; bottom: 20px; left: 30%; transform: translateX(-50%); padding: 8px 16px; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; pointer-events: none; z-index: 5;}
 
-        header { position: absolute; top: 15px; left: 2.5%; width: 95%; height: 75px; z-index: 1000; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
+        header { position: absolute; top: clamp(10px, 2vw, 15px); left: 2.5%; width: 95%; height: clamp(65px, 8vh, 75px); z-index: 1000; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(20px, 4vw, 40px); }
         .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
-        .logo img { max-height: 35px; width: auto; }
-        .logo-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
+        .logo img { max-height: clamp(25px, 5vw, 35px); }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
         
-        nav ul { list-style: none; display: flex; gap: 35px; }
-        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; transition: opacity 0.3s; }
+        nav ul { list-style: none; display: flex; gap: clamp(20px, 3vw, 35px); }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: clamp(0.7rem, 1.2vw, 0.85rem); text-transform: uppercase; letter-spacing: 1.5px; transition: opacity 0.3s; text-shadow: 0 0 10px rgba(255,255,255,0.5);}
         nav a:hover { opacity: 0.5; }
 
         .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; padding: 10px;}
         .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
 
-        /* MINIMALIST ARROW TOGGLE BUTTON */
         #config-toggle {
-            position: absolute; right: 2.5%; top: 105px; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; z-index: 90; display: flex; align-items: center; justify-content: center; color: var(--text-dark); border: 1px solid rgba(255, 255, 255, 0.6); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: absolute; right: 2.5%; top: clamp(85px, 12vh, 105px); width: clamp(40px, 5vw, 45px); height: clamp(40px, 5vw, 45px); border-radius: 50%; cursor: pointer; z-index: 90; display: flex; align-items: center; justify-content: center; color: var(--text-dark); border: 1px solid rgba(255, 255, 255, 0.6); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         #config-toggle:hover { background: rgba(255,255,255,0.7); transform: scale(1.05); }
 
-        .controls-panel { position: absolute; right: 2.5%; top: 105px; width: 320px; height: calc(100dvh - 120px); display: flex; flex-direction: column; z-index: 100; border-radius: 16px; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease; transform: translateX(0); }
+        .controls-panel { position: absolute; right: 2.5%; top: clamp(85px, 12vh, 105px); width: clamp(280px, 30vw, 320px); height: calc(100dvh - clamp(100px, 15vh, 120px)); display: flex; flex-direction: column; z-index: 100; border-radius: 16px; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease; transform: translateX(0); }
         .controls-panel.closed { transform: translateX(calc(100% + 40px)); opacity: 0.5; pointer-events: none; }
         
-        .panel-header { padding: 25px 25px 10px; flex-shrink: 0;}
-        .panel-header h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 2px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);}
+        .panel-header { padding: clamp(15px, 3vw, 25px) clamp(15px, 3vw, 25px) 10px; flex-shrink: 0;}
+        .panel-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.3rem, 2vw, 1.6rem); margin-bottom: 2px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);}
         .panel-header p { font-size: 0.7rem; color: #333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         
-        /* MINIMALIST CLOSE ARROW INSIDE PANEL */
         #close-config { background: none; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dark); opacity: 0.5; transition: all 0.3s; margin-top: -5px; }
         #close-config:hover { opacity: 1; transform: scale(1.1); }
 
-        .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.6); padding: 0 25px; margin-top: 10px; flex-shrink: 0;}
+        .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.6); padding: 0 clamp(15px, 3vw, 25px); margin-top: 10px; flex-shrink: 0;}
         .tab-btn { flex: 1; background: transparent; border: none; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #444; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s;}
         .tab-btn.active { color: var(--text-dark); border-bottom-color: var(--text-dark); }
         
-        .tab-content { padding: 20px 25px; overflow-y: auto; flex-grow: 1; display: none; -webkit-overflow-scrolling: touch; }
+        .tab-content { padding: 20px clamp(15px, 3vw, 25px); overflow-y: auto; flex-grow: 1; display: none; -webkit-overflow-scrolling: touch; }
         .tab-content.active { display: block; }
         .control-block { margin-bottom: 20px; }
         .control-block h3 { margin-bottom: 10px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: #333; font-weight: 700;}
@@ -81,28 +79,23 @@
         .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--text-dark); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-top: 15px;}
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* MOBILE ADJUSTMENTS */
         @media (max-width: 900px) {
             .ui-overlay { left: 50%; }
-            .controls-panel { top: auto; bottom: 15px; right: 2.5%; left: 2.5%; width: 95%; height: auto; max-height: 45%; }
+            .controls-panel { top: auto; bottom: 15px; right: 2.5%; left: 2.5%; width: 95%; height: auto; max-height: 50dvh; }
             .controls-panel.closed { transform: translateY(calc(100% + 40px)); }
             
             #config-toggle { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); width: 50px; height: 50px; padding: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
             #config-toggle:hover { transform: translateX(50%) scale(1.05); }
             
-            /* Rotates arrows to point UP and DOWN on mobile */
             #config-toggle svg, #close-config svg { transform: rotate(90deg); }
-
-            .panel-header { padding: 15px 20px 5px; } .panel-header h1 { font-size: 1.4rem; }
-            .tabs { padding: 0 20px; } .tab-content { padding: 15px 20px; }
         }
         @media (max-width: 768px) {
-            header { top: 10px; height: 65px; padding: 0 20px; }
             .hamburger { display: flex; }
-            nav { position: fixed; top: 85px; left: -100%; width: 95%; height: calc(100dvh - 100px); border-radius: 16px; transition: left 0.3s ease; padding: 30px; z-index: 999; flex-direction: column; background: rgba(255,255,255,0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+            nav { position: fixed; top: 85px; left: -100%; width: 95%; height: calc(100dvh - 100px); border-radius: 16px; transition: left 0.3s ease; padding: 30px; z-index: 999; flex-direction: column; overflow-y: auto;}
             nav.active { left: 2.5%; }
+            nav.glass-fluted { background: rgba(255,255,255,0.9); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);}
             nav ul { flex-direction: column; gap: 20px; }
-            nav a { display: block; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; font-size: 1.2rem;}
+            nav a { display: block; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; font-size: 1.2rem; text-shadow: none;}
         }
     </style>
 </head>
@@ -142,7 +135,6 @@
             <div class="panel-header">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div><h1>Configurator</h1><p>Interactive 3D Engine</p></div>
-                    
                     <button id="close-config">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>
@@ -207,7 +199,20 @@
 
         const hamburger = document.querySelector('.hamburger');
         const nav = document.getElementById('mobile-nav');
-        hamburger.addEventListener('click', () => { nav.classList.toggle('active'); });
+        
+        hamburger.addEventListener('click', () => { 
+            nav.classList.toggle('active'); 
+            if (window.innerWidth <= 768) {
+                nav.classList.add('glass-fluted');
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                nav.classList.remove('glass-fluted');
+                nav.classList.remove('active');
+            }
+        });
 
         function openTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
