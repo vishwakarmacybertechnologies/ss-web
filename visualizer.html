@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Pro Configurator | Sambandh Sales</title>
+    <title>Hybrid Pro Configurator | Sambandh Sales</title>
     <link rel="icon" type="image/png" href="logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -16,8 +16,9 @@
     <style>
         :root { --text-dark: #111111; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; color: var(--text-dark); overflow: hidden; position: fixed; width: 100%; height: 100%; background: #000;}
+        body { font-family: 'Inter', sans-serif; color: var(--text-dark); overflow: hidden; position: fixed; width: 100%; height: 100%; background: #000; touch-action: none; }
 
+        /* THE UNIVERSAL FLUTED GLASS CLASS */
         .glass-fluted {
             background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -25,77 +26,115 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        .app-container { position: relative; width: 100vw; height: 100dvh; overflow: hidden; }
-        .view-area { position: absolute; top: 0; left: 0; width: 100vw; height: 100dvh; background: radial-gradient(circle at center, #ffffff 0%, #d8d8d8 100%); z-index: 1; cursor: grab; }
-        .view-area:active { cursor: grabbing; }
-        #canvas-container { width: 100%; height: 100%; display: block; }
+        .app-container { position: relative; width: 100vw; height: 100dvh; overflow: hidden; background: #e8e8e8; }
         
-        .ui-overlay { position: absolute; bottom: 20px; left: 30%; transform: translateX(-50%); padding: 8px 16px; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; pointer-events: none; z-index: 5;}
+        /* VIEWER AREAS */
+        .view-area { position: absolute; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 1; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #ffffff 0%, #d8d8d8 100%); overflow: hidden; transition: opacity 0.6s ease-in-out;}
+        
+        #view-2d { cursor: grab; opacity: 1; pointer-events: auto;}
+        #view-2d:active { cursor: grabbing; }
+        #img-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transform-origin: center; transition: opacity 0.4s ease-in-out; opacity: 0; }
+        #vis-image { width: 100%; height: 100%; object-fit: contain; pointer-events: none; padding: 110px 20px 20px 20px; }
+        
+        #view-3d { opacity: 0; pointer-events: none; z-index: 2; cursor: grab;}
+        #view-3d:active { cursor: grabbing; }
+        #canvas-container { width: 100%; height: 100%; display: block; }
 
-        header { position: absolute; top: clamp(10px, 2vw, 15px); left: 2.5%; width: 95%; height: clamp(65px, 8vh, 75px); z-index: 1000; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(20px, 4vw, 40px); }
+        /* HYBRID MODE TOGGLE BUTTON */
+        .mode-toggle-wrapper { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 90; display: flex; gap: 15px;}
+        #mode-toggle { padding: 14px 28px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 700; font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; color: var(--text-dark); border: 1px solid rgba(255, 255, 255, 0.8); transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
+        #mode-toggle:hover { background: rgba(255,255,255,0.9); transform: translateY(-3px); }
+
+        /* ON-SCREEN ZOOM CONTROLS */
+        .zoom-controls { position: absolute; left: 2.5%; bottom: 30px; z-index: 50; display: flex; flex-direction: column; gap: 10px; transition: opacity 0.4s; }
+        .zoom-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; cursor: pointer; color: var(--text-dark); transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);}
+        .zoom-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.8);}
+        
+        /* HEADER (Reverted to clean light look) */
+        header { position: absolute; top: clamp(10px, 2vw, 15px); left: 2.5%; width: 95%; height: clamp(65px, 8vh, 75px); z-index: 1000; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(20px, 4vw, 40px); pointer-events: auto;}
         .logo { display: flex; align-items: center; gap: 15px; text-decoration: none;}
-        .logo img { max-height: clamp(25px, 5vw, 35px); }
+        .logo img { max-height: clamp(25px, 5vw, 35px); width: auto; }
         .logo-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dark); }
         
         nav ul { list-style: none; display: flex; gap: clamp(20px, 3vw, 35px); }
-        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: clamp(0.7rem, 1.2vw, 0.85rem); text-transform: uppercase; letter-spacing: 1.5px; transition: opacity 0.3s; text-shadow: 0 0 10px rgba(255,255,255,0.5);}
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: clamp(0.7rem, 1.2vw, 0.85rem); text-transform: uppercase; letter-spacing: 1.5px; transition: opacity 0.3s;}
         nav a:hover { opacity: 0.5; }
 
         .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; padding: 10px;}
         .hamburger span { display: block; width: 25px; height: 2px; background-color: var(--text-dark); transition: all 0.3s; }
 
+        /* ARROW TOGGLE BUTTON */
         #config-toggle {
             position: absolute; right: 2.5%; top: clamp(85px, 12vh, 105px); width: clamp(40px, 5vw, 45px); height: clamp(40px, 5vw, 45px); border-radius: 50%; cursor: pointer; z-index: 90; display: flex; align-items: center; justify-content: center; color: var(--text-dark); border: 1px solid rgba(255, 255, 255, 0.6); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        #config-toggle:hover { background: rgba(255,255,255,0.7); transform: scale(1.05); }
+        #config-toggle:hover { background: rgba(255,255,255,0.9); transform: scale(1.05); }
 
-        .controls-panel { position: absolute; right: 2.5%; top: clamp(85px, 12vh, 105px); width: clamp(280px, 30vw, 320px); height: calc(100dvh - clamp(100px, 15vh, 120px)); display: flex; flex-direction: column; z-index: 100; border-radius: 16px; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease; transform: translateX(0); }
+        /* SLIDING CONTROLS PANEL */
+        .controls-panel { position: absolute; right: 2.5%; top: clamp(85px, 12vh, 105px); width: clamp(280px, 30vw, 320px); height: calc(100dvh - clamp(100px, 15vh, 120px)); display: flex; flex-direction: column; z-index: 100; border-radius: 16px; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease; transform: translateX(0); pointer-events: auto;}
         .controls-panel.closed { transform: translateX(calc(100% + 40px)); opacity: 0.5; pointer-events: none; }
         
-        .panel-header { padding: clamp(15px, 3vw, 25px) clamp(15px, 3vw, 25px) 10px; flex-shrink: 0;}
-        .panel-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.3rem, 2vw, 1.6rem); margin-bottom: 2px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);}
-        .panel-header p { font-size: 0.7rem; color: #333; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        /* CRISP, SOLID BLACK TEXT INSIDE CONFIGURATOR */
+        .panel-header { padding: clamp(20px, 3vw, 25px) clamp(20px, 3vw, 25px) 10px; border-bottom: 1px solid rgba(255,255,255,0.6); flex-shrink: 0;}
+        .panel-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.3rem, 2vw, 1.6rem); margin-bottom: 2px; color: #000000; font-weight: 800; text-shadow: none;}
+        .panel-header p { font-size: 0.75rem; color: #222222; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 10px;}
         
-        #close-config { background: none; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dark); opacity: 0.5; transition: all 0.3s; margin-top: -5px; }
+        #close-config { background: none; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #000000; opacity: 0.6; transition: all 0.3s; margin-top: -5px; }
         #close-config:hover { opacity: 1; transform: scale(1.1); }
+        
+        .tab-content { padding: 25px; overflow-y: auto; flex-grow: 1; display: none; -webkit-overflow-scrolling: touch; }
+        .tab-content.active { display: block; }
 
         .tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.6); padding: 0 clamp(15px, 3vw, 25px); margin-top: 10px; flex-shrink: 0;}
-        .tab-btn { flex: 1; background: transparent; border: none; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #444; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s;}
-        .tab-btn.active { color: var(--text-dark); border-bottom-color: var(--text-dark); }
-        
-        .tab-content { padding: 20px clamp(15px, 3vw, 25px); overflow-y: auto; flex-grow: 1; display: none; -webkit-overflow-scrolling: touch; }
-        .tab-content.active { display: block; }
-        .control-block { margin-bottom: 20px; }
-        .control-block h3 { margin-bottom: 10px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: #333; font-weight: 700;}
-        
-        button.option-btn { width: 100%; padding: 12px 16px; margin-bottom: 8px; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; text-align: left; display: flex; justify-content: space-between; border-radius: 6px; transition: all 0.3s;}
-        button.option-btn.active { background: rgba(0,0,0,0.85); color: #fff; border-color: transparent;}
-        
-        .mixer-container { background: rgba(255,255,255,0.45); padding: 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.6); display: flex; flex-direction: column; align-items: center; }
-        .mixer-preview { width: 100%; height: 40px; border-radius: 4px; background-color: #a3a3a3; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8rem; font-weight: 600; }
-        #color-dial { margin-bottom: 5px; touch-action: none; }
+        .tab-btn { flex: 1; background: transparent; border: none; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: #555555; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s;}
+        .tab-btn.active { color: #000000; border-bottom-color: #000000; }
 
-        #loader { position: absolute; inset: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.5rem; transition: opacity 0.5s; pointer-events: none;}
+        .control-block { margin-bottom: 30px; }
+        .control-block h3 { margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #000000; font-weight: 800; display: flex; justify-content: space-between; align-items: center;}
+        .control-block h3 span { font-size: 0.55rem; background: #000000; color: #ffffff; padding: 3px 6px; border-radius: 4px; letter-spacing: 1px;}
+        
+        button.option-btn { width: 100%; padding: 14px 16px; margin-bottom: 8px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 700; text-align: left; display: flex; justify-content: space-between; align-items: center; border-radius: 6px; transition: all 0.3s; color: #111111;}
+        button.option-btn:hover { background: rgba(255,255,255,0.9); }
+        button.option-btn.active { background: #000000; color: #ffffff; border-color: transparent;}
+        
+        /* SHADE CARD STYLES */
+        .shade-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .shade-card { width: 100%; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: all 0.3s; color: #111111;}
+        .shade-card:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px);}
+        .shade-card.active { background: #000000; color: #ffffff; border-color: transparent; }
+        .shade-color-circle { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0;}
+        .shade-info { display: flex; flex-direction: column; }
+        .shade-name { font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
+        .shade-desc { font-size: 0.7rem; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;}
+
+        /* DIAL STYLES (3D ONLY) */
+        .mixer-container { background: rgba(255,255,255,0.6); padding: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.8); display: flex; flex-direction: column; align-items: center; }
+        .mixer-preview { width: 100%; height: 40px; border-radius: 4px; background-color: #a3a3a3; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 700; letter-spacing: 1px;}
+        #color-dial { margin-bottom: 10px; touch-action: none; }
+
+        /* Loaders */
+        #loader-2d, #loader-3d { position: absolute; inset: 0; background: rgba(255,255,255,0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #111; transition: opacity 0.5s; pointer-events: none;}
         .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--text-dark); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-top: 15px;}
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         @media (max-width: 900px) {
-            .ui-overlay { left: 50%; }
-            .controls-panel { top: auto; bottom: 15px; right: 2.5%; left: 2.5%; width: 95%; height: auto; max-height: 50dvh; }
+            .controls-panel { top: auto; bottom: 15px; right: 2.5%; left: 2.5%; width: 95%; height: auto; max-height: 55dvh; }
             .controls-panel.closed { transform: translateY(calc(100% + 40px)); }
             
-            #config-toggle { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); width: 50px; height: 50px; padding: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
-            #config-toggle:hover { transform: translateX(50%) scale(1.05); }
-            
+            #config-toggle { top: auto; bottom: 20px; right: 5%; transform: none; width: 50px; height: 50px; padding: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
+            #config-toggle:hover { transform: scale(1.05); }
             #config-toggle svg, #close-config svg { transform: rotate(90deg); }
+            
+            .mode-toggle-wrapper { bottom: 20px; left: 5%; transform: none; }
+            .zoom-controls { bottom: calc(55dvh + 30px); }
+            #vis-image { padding: 90px 10px 10px 10px; }
         }
         @media (max-width: 768px) {
+            header { top: 10px; height: 65px; padding: 0 20px; }
             .hamburger { display: flex; }
-            nav { position: fixed; top: 85px; left: -100%; width: 95%; height: calc(100dvh - 100px); border-radius: 16px; transition: left 0.3s ease; padding: 30px; z-index: 999; flex-direction: column; overflow-y: auto;}
+            nav { position: fixed; top: 85px; left: -100%; width: 95%; height: calc(100dvh - 100px); border-radius: 16px; transition: left 0.3s ease; padding: 30px; z-index: 999; flex-direction: column; background: rgba(255,255,255,0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
             nav.active { left: 2.5%; }
-            nav.glass-fluted { background: rgba(255,255,255,0.9); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);}
             nav ul { flex-direction: column; gap: 20px; }
-            nav a { display: block; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; font-size: 1.2rem; text-shadow: none;}
+            nav a { display: block; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; font-size: 1.2rem; color: #111;}
         }
     </style>
 </head>
@@ -103,10 +142,20 @@
 
     <div class="app-container">
         
-        <div class="view-area">
-            <div id="loader">Loading Geometry...<div class="spinner"></div></div>
+        <div class="view-area" id="view-2d">
+            <div id="loader-2d">Loading Assets...<div class="spinner"></div></div>
+            <div id="img-container">
+                <img id="vis-image" src="v1.jpg" alt="Pre-Cast Concrete Configurator">
+            </div>
+            <div class="zoom-controls" id="zoom-controls">
+                <button class="zoom-btn glass-fluted" onclick="manualZoom(0.2)">+</button>
+                <button class="zoom-btn glass-fluted" onclick="manualZoom(-0.2)">-</button>
+            </div>
+        </div>
+
+        <div class="view-area" id="view-3d">
+            <div id="loader-3d">Loading Geometry...<div class="spinner"></div></div>
             <div id="canvas-container"></div>
-            <div class="ui-overlay glass-fluted">Rotate • Zoom</div>
         </div>
 
         <header class="glass-fluted">
@@ -125,6 +174,15 @@
             </nav>
         </header>
 
+        <div class="mode-toggle-wrapper">
+            <button id="mode-toggle" class="glass-fluted" onclick="toggleEngineMode()">
+                <span id="mode-text">Explore in 3D</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 2v6h-6M2.13 15.57a10 10 0 1 0 2.27-11.6L2 6"></path>
+                </svg>
+            </button>
+        </div>
+
         <button id="config-toggle" class="glass-fluted">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 18 9 12 15 6"></polyline>
@@ -134,7 +192,7 @@
         <div class="controls-panel glass-fluted" id="controls-panel">
             <div class="panel-header">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div><h1>Configurator</h1><p>Interactive 3D Engine</p></div>
+                    <div><h1>Configurator</h1><p id="panel-subtitle">2D Photoreal Engine</p></div>
                     <button id="close-config">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>
@@ -142,48 +200,70 @@
                     </button>
                 </div>
             </div>
-            
+
             <div class="tabs">
-                <button class="tab-btn active" onclick="openTab('tab-finish', this)">Design</button>
-                <button class="tab-btn" onclick="openTab('tab-color', this)">Color</button>
-                <button class="tab-btn" onclick="openTab('tab-light', this)">Lighting</button>
+                <button class="tab-btn active" onclick="openTab('tab-env', this)">Setting</button>
+                <button class="tab-btn" onclick="openTab('tab-color', this)">Pigment</button>
+                <button class="tab-btn" onclick="openTab('tab-3d', this)">3D Mesh</button>
             </div>
 
-            <div id="tab-finish" class="tab-content active">
+            <div id="tab-env" class="tab-content active">
                 <div class="control-block">
-                    <h3>1. Profile</h3>
-                    <button class="option-btn active" onclick="changeShape('custom', this)"><span>DFG Pattern</span> <span>.GLB</span></button>
-                    <button class="option-btn" onclick="changeShape('diamond', this)"><span>Diamond</span> <span>ALGO</span></button>
-                    <button class="option-btn" onclick="changeShape('fluted', this)"><span>Fluted</span> <span>RIBBED</span></button>
-                </div>
-                <div class="control-block">
-                    <h3>2. Texture</h3>
-                    <button class="option-btn active" onclick="changeMaterial('matte', this)"><span>Raw Brutalist</span> <span>MATTE</span></button>
-                    <button class="option-btn" onclick="changeMaterial('polished', this)"><span>Sealed</span> <span>GLOSS</span></button>
+                    <h3>Environment Simulator</h3>
+                    <button class="option-btn active" onclick="updateState('env', 'interior', this)"><span>Interior Studio</span> <span>IN</span></button>
+                    <button class="option-btn" onclick="updateState('env', 'exterior', this)"><span>Exterior Facade</span> <span>OUT</span></button>
                 </div>
             </div>
 
             <div id="tab-color" class="tab-content">
-                <div class="control-block">
-                    <h3>Pigment</h3>
-                    <div class="mixer-container"><div class="mixer-preview" id="mixer-preview">#A3A3A3</div><div id="color-dial"></div></div>
+                
+                <div id="color-2d-controls" class="control-block">
+                    <h3>Pigment (Shade Card)</h3>
+                    <div class="shade-grid">
+                        <div class="shade-card active" id="shade-grey" onclick="updateState('color', 'grey', this)">
+                            <div class="shade-color-circle" style="background-color: #a3a3a3;"></div>
+                            <div class="shade-info"><span class="shade-name">Raw Brutalist</span><span class="shade-desc">Industrial Grey</span></div>
+                        </div>
+                        <div class="shade-card" id="shade-white" onclick="updateState('color', 'white', this)">
+                            <div class="shade-color-circle" style="background-color: #f4f4f0;"></div>
+                            <div class="shade-info"><span class="shade-name">Pure Minimalist</span><span class="shade-desc">Architectural White</span></div>
+                        </div>
+                    </div>
                 </div>
+
+                <div id="color-3d-controls" class="control-block" style="display: none;">
+                    <h3>Custom Pigment <span>3D ONLY</span></h3>
+                    <div class="mixer-container">
+                        <div class="mixer-preview" id="mixer-preview">#A3A3A3</div>
+                        <div id="color-dial"></div>
+                    </div>
+                </div>
+
             </div>
 
-            <div id="tab-light" class="tab-content">
+            <div id="tab-3d" class="tab-content">
                 <div class="control-block">
-                    <h3>Environment</h3>
-                    <button class="option-btn active" onclick="changeLighting('interior', this)"><span>Soft Studio</span></button>
-                    <button class="option-btn" onclick="changeLighting('exterior', this)"><span>Harsh Sunlight</span></button>
+                    <h3>1. Geometry Profile <span>3D ONLY</span></h3>
+                    <button class="option-btn active" onclick="updateState('shape', 'custom', this)"><span>DFG Pattern</span> <span>.GLB</span></button>
+                    <button class="option-btn" onclick="updateState('shape', 'diamond', this)"><span>Diamond</span> <span>ALGO</span></button>
+                    <button class="option-btn" onclick="updateState('shape', 'fluted', this)"><span>Fluted</span> <span>RIBBED</span></button>
+                </div>
+                <div class="control-block">
+                    <h3>2. Surface Physics <span>3D ONLY</span></h3>
+                    <button class="option-btn active" onclick="updateState('texture', 'matte', this)"><span>Raw Brutalist</span> <span>MATTE</span></button>
+                    <button class="option-btn" onclick="updateState('texture', 'polished', this)"><span>Sealed</span> <span>GLOSS</span></button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- UI & NAV LOGIC ---
         const configToggle = document.getElementById('config-toggle');
         const controlsPanel = document.getElementById('controls-panel');
         const closeConfig = document.getElementById('close-config');
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.getElementById('mobile-nav');
 
         configToggle.addEventListener('click', () => {
             controlsPanel.classList.remove('closed');
@@ -197,33 +277,165 @@
             configToggle.style.pointerEvents = 'auto';
         });
 
-        const hamburger = document.querySelector('.hamburger');
-        const nav = document.getElementById('mobile-nav');
-        
-        hamburger.addEventListener('click', () => { 
-            nav.classList.toggle('active'); 
-            if (window.innerWidth <= 768) {
-                nav.classList.add('glass-fluted');
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) {
-                nav.classList.remove('glass-fluted');
-                nav.classList.remove('active');
-            }
-        });
+        hamburger.addEventListener('click', () => { nav.classList.toggle('active'); });
+        window.addEventListener('resize', () => { if (window.innerWidth > 768) nav.classList.remove('active'); });
 
         function openTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
-            if(tabId === 'tab-color') { setTimeout(() => window.dispatchEvent(new Event('resize')), 50); }
+
+            if(tabId === 'tab-color' && state.mode === '3d' && colorPicker) {
+                setTimeout(() => colorPicker.resize(window.innerWidth < 400 ? 160 : 200), 50);
+            }
+
+            if (tabId === 'tab-3d' && state.mode === '2d') {
+                toggleEngineMode();
+            }
         }
 
-        const container = document.getElementById('canvas-container');
-        const loader = document.getElementById('loader');
+        // --- GLOBAL STATE ---
+        const state = {
+            mode: '2d',
+            env: 'interior',
+            color: 'grey', 
+            shape: 'custom',
+            texture: 'matte'
+        };
+
+        // --- HYBRID TOGGLE ENGINE ---
+        const view2d = document.getElementById('view-2d');
+        const view3d = document.getElementById('view-3d');
+        const modeText = document.getElementById('mode-text');
+        const panelSubtitle = document.getElementById('panel-subtitle');
+        const zoomControls = document.getElementById('zoom-controls');
+        
+        const color2dControls = document.getElementById('color-2d-controls');
+        const color3dControls = document.getElementById('color-3d-controls');
+
+        function toggleEngineMode() {
+            if (state.mode === '2d') {
+                state.mode = '3d';
+                view2d.style.opacity = '0';
+                view2d.style.pointerEvents = 'none';
+                zoomControls.style.opacity = '0';
+                
+                view3d.style.opacity = '1';
+                view3d.style.pointerEvents = 'auto';
+                
+                modeText.innerText = "Explore in 2D";
+                panelSubtitle.innerText = "Interactive 3D Engine";
+                
+                color2dControls.style.display = 'none';
+                color3dControls.style.display = 'block';
+                if(colorPicker) setTimeout(() => colorPicker.resize(window.innerWidth < 400 ? 160 : 200), 50);
+                
+                resize3DCanvas();
+            } else {
+                state.mode = '2d';
+                view3d.style.opacity = '0';
+                view3d.style.pointerEvents = 'none';
+                
+                view2d.style.opacity = '1';
+                view2d.style.pointerEvents = 'auto';
+                zoomControls.style.opacity = '1';
+                
+                modeText.innerText = "Explore in 3D";
+                panelSubtitle.innerText = "2D Photoreal Engine";
+                
+                color3dControls.style.display = 'none';
+                color2dControls.style.display = 'block';
+
+                update2DEngine();
+            }
+        }
+
+        // --- UNIFIED CONTROLLER ---
+        function updateState(param, value, btnElement) {
+            if(param === 'env' || param === 'shape' || param === 'texture') {
+                btnElement.parentElement.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
+                btnElement.classList.add('active');
+            } else if (param === 'color') {
+                document.querySelectorAll('.shade-card').forEach(card => card.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+
+            state[param] = value;
+
+            if (param === 'env' || param === 'color') {
+                update2DEngine();
+                update3DEngine(); 
+            }
+            if (param === 'shape') { build3DShape(value); }
+            if (param === 'texture') { update3DEngine(); }
+        }
+
+        // --- 2D ENGINE (Images & Pan/Zoom) ---
+        const imgContainer = document.getElementById('img-container');
+        const visImage = document.getElementById('vis-image');
+        const loader2d = document.getElementById('loader-2d');
+
+        visImage.onload = () => { loader2d.style.opacity = '0'; imgContainer.style.opacity = '1'; };
+        visImage.onerror = () => { loader2d.innerHTML = '<span style="color: #d00; font-weight: 700; font-size: 1rem; text-align:center;">Error: Image missing.<br><span style="font-size:0.7rem; color:#333;">Check folder for ' + visImage.src.split('/').pop() + '</span></span>'; };
+
+        function update2DEngine() {
+            if(state.mode !== '2d') return; 
+
+            let targetImage = 'v1.jpg';
+            if (state.env === 'interior' && state.color === 'grey') { targetImage = 'v1.jpg'; }
+            else if (state.env === 'interior' && state.color === 'white') { targetImage = 'v4.png'; }
+            else if (state.env === 'exterior' && state.color === 'white') { targetImage = 'v5.png'; }
+            else if (state.env === 'exterior' && state.color === 'grey') { targetImage = 'v6.png'; }
+
+            imgContainer.style.opacity = '0'; 
+            loader2d.innerHTML = 'Rendering...<div class="spinner"></div>';
+            loader2d.style.opacity = '1';
+            
+            setTimeout(() => { resetZoom(); visImage.src = targetImage; }, 300);
+        }
+
+        // 2D Pan & Zoom Physics
+        const viewArea = document.getElementById('view-2d');
+        let scale = 1, panning = false, pointX = 0, pointY = 0, startX = 0, startY = 0;
+
+        function setTransform() { if (scale < 1) scale = 1; imgContainer.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`; }
+        function resetZoom() { scale = 1; pointX = 0; pointY = 0; setTransform(); }
+        function manualZoom(amount) { scale += amount; if(scale <= 1) { scale = 1; pointX = 0; pointY = 0; } if(scale > 5) scale = 5; setTransform(); }
+
+        viewArea.onwheel = function(e) {
+            e.preventDefault();
+            let xs = (e.clientX - pointX) / scale, ys = (e.clientY - pointY) / scale;
+            (e.wheelDelta ? e.wheelDelta : -e.deltaY) > 0 ? (scale *= 1.1) : (scale /= 1.1);
+            if(scale < 1) { scale = 1; pointX = 0; pointY = 0; } if(scale > 5) scale = 5;
+            pointX = e.clientX - xs * scale; pointY = e.clientY - ys * scale; setTransform();
+        }
+
+        viewArea.onmousedown = function(e) {
+            if(e.target.closest('.controls-panel') || e.target.closest('header') || e.target.closest('.zoom-controls') || e.target.closest('.mode-toggle-wrapper')) return;
+            panning = true; startX = e.clientX - pointX; startY = e.clientY - pointY;
+        }
+        viewArea.onmousemove = function(e) { if (!panning || scale === 1) return; pointX = e.clientX - startX; pointY = e.clientY - startY; setTransform(); }
+        viewArea.onmouseup = viewArea.onmouseleave = function() { panning = false; }
+
+        let initialDist = null, initialScale = 1;
+        viewArea.addEventListener('touchstart', function(e) {
+            if(e.target.closest('.controls-panel') || e.target.closest('header') || e.target.closest('.zoom-controls') || e.target.closest('.mode-toggle-wrapper')) return;
+            if (e.touches.length === 1) { panning = true; startX = e.touches[0].clientX - pointX; startY = e.touches[0].clientY - pointY; }
+            else if (e.touches.length === 2) { panning = false; initialDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); initialScale = scale; }
+        });
+        viewArea.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 1 && panning && scale > 1) { pointX = e.touches[0].clientX - startX; pointY = e.touches[0].clientY - startY; setTransform(); }
+            else if (e.touches.length === 2 && initialDist) { e.preventDefault(); scale = initialScale * (Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY) / initialDist); if(scale < 1) { scale = 1; pointX = 0; pointY = 0; } if(scale > 5) scale = 5; setTransform(); }
+        }, { passive: false });
+        viewArea.addEventListener('touchend', function() { panning = false; initialDist = null; });
+
+        // Initialize 2D
+        setTimeout(() => { visImage.src = 'v1.jpg'; }, 100);
+
+        // --- 3D THREE.JS ENGINE ---
+        const container3d = document.getElementById('canvas-container');
+        const loader3d = document.getElementById('loader-3d');
         const scene = new THREE.Scene();
         const isMobile = window.innerWidth < 768;
 
@@ -232,18 +444,18 @@
         renderer.toneMapping = THREE.ACESFilmicToneMapping; 
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = isMobile ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
-        container.appendChild(renderer.domElement);
+        container3d.appendChild(renderer.domElement);
 
         const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
         camera.position.set(isMobile ? 4 : 2, isMobile ? 3 : 2, isMobile ? 7 : 5); 
 
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 + 0.1; 
-        controls.autoRotate = true; controls.autoRotateSpeed = 1.5;
-        controls.target.set(isMobile ? 0 : -1, 1.5, 0);
+        const controls3d = new THREE.OrbitControls(camera, renderer.domElement);
+        controls3d.enableDamping = true; controls3d.maxPolarAngle = Math.PI / 2 + 0.1; 
+        controls3d.autoRotate = true; controls3d.autoRotateSpeed = 1.5;
+        controls3d.target.set(isMobile ? 0 : -1, 1.5, 0);
 
-        container.addEventListener('mousedown', () => { controls.autoRotate = false; });
-        container.addEventListener('touchstart', () => { controls.autoRotate = false; }, {passive: true});
+        container3d.addEventListener('mousedown', () => { controls3d.autoRotate = false; });
+        container3d.addEventListener('touchstart', () => { controls3d.autoRotate = false; }, {passive: true});
 
         const pmremGenerator = new THREE.PMREMGenerator(renderer);
         scene.environment = pmremGenerator.fromScene(new THREE.RoomEnvironment()).texture;
@@ -260,21 +472,8 @@
 
         let currentPanelGroup = null;
 
-        function createDiamondRing(size, thickness, depth, mat) {
-            const ring = new THREE.Group();
-            const length = size / Math.sqrt(2);
-            const geo = new THREE.BoxGeometry(length + thickness, thickness, depth);
-            const offset = size / 4; 
-            const s1 = new THREE.Mesh(geo, mat); s1.position.set(offset, offset, depth/2); s1.rotation.z = Math.PI/4; s1.castShadow = true; s1.receiveShadow = true;
-            const s2 = new THREE.Mesh(geo, mat); s2.position.set(-offset, offset, depth/2); s2.rotation.z = -Math.PI/4; s2.castShadow = true; s2.receiveShadow = true;
-            const s3 = new THREE.Mesh(geo, mat); s3.position.set(-offset, -offset, depth/2); s3.rotation.z = Math.PI/4; s3.castShadow = true; s3.receiveShadow = true;
-            const s4 = new THREE.Mesh(geo, mat); s4.position.set(offset, -offset, depth/2); s4.rotation.z = -Math.PI/4; s4.castShadow = true; s4.receiveShadow = true;
-            ring.add(s1, s2, s3, s4);
-            return ring;
-        }
-
-        function buildShape(shapeType) {
-            loader.style.opacity = '1';
+        function build3DShape(shapeType) {
+            loader3d.style.opacity = '1';
             setTimeout(() => {
                 if (currentPanelGroup) { scene.remove(currentPanelGroup); }
                 currentPanelGroup = new THREE.Group();
@@ -289,7 +488,9 @@
                         const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray());
                         if(maxDim > 0) wrapper.scale.setScalar(3.2 / maxDim);
                         currentPanelGroup.add(wrapper); currentPanelGroup.position.y = 1.5; scene.add(currentPanelGroup);
-                        loader.style.opacity = '0';
+                        loader3d.style.opacity = '0';
+                    }, undefined, function() {
+                        loader3d.innerHTML = '<span style="color:#d00; font-weight:700; font-size:1rem;">Error: DFG.glb missing</span>';
                     }); return; 
                 } 
                 else if (shapeType === 'fluted') {
@@ -301,45 +502,59 @@
                 } 
                 else if (shapeType === 'diamond') {
                     const base = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 0.1), concreteMaterial); base.castShadow = true; base.receiveShadow = true; currentPanelGroup.add(base);
+                    for(let x = -0.8; x <= 0.8; x += 0.8) {
+                        for(let y = -1.2; y <= 1.2; y += 0.8) {
+                            const pyr = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.08, 4), concreteMaterial);
+                            pyr.rotation.x = Math.PI/2; pyr.rotation.z = Math.PI/4; pyr.position.set(x, y, 0.05);
+                            pyr.castShadow = true; pyr.receiveShadow = true; currentPanelGroup.add(pyr);
+                        }
+                    }
                 }
                 currentPanelGroup.position.y = 1.5; scene.add(currentPanelGroup);
-                setTimeout(() => { loader.style.opacity = '0'; }, 200);
+                setTimeout(() => { loader3d.style.opacity = '0'; }, 200);
             }, 50); 
         }
-        buildShape('custom');
+        build3DShape('custom');
 
-        function changeShape(type, btn) {
-            document.querySelectorAll('#tab-finish .option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); buildShape(type);
-        }
-
-        function resizeCanvas() {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-            if(colorPicker) colorPicker.resize(window.innerWidth < 400 ? 160 : 200);
-        }
-        window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 100);
-
-        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); } animate();
-
-        function changeMaterial(type, btn) {
-            btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-            concreteMaterial.roughness = type === 'matte' ? 0.9 : 0.1;
-            concreteMaterial.clearcoat = type === 'matte' ? 0.0 : 1.0;
+        function update3DEngine() {
+            if(state.mode === '2d') {
+                if(state.color === 'grey') { concreteMaterial.color.setHex(0xa3a3a3); updateColorDial('#a3a3a3'); }
+                if(state.color === 'white') { concreteMaterial.color.setHex(0xf4f4f0); updateColorDial('#f4f4f0'); }
+            }
+            concreteMaterial.roughness = state.texture === 'matte' ? 0.9 : 0.1;
+            concreteMaterial.clearcoat = state.texture === 'matte' ? 0.0 : 1.0;
+            dirLight.intensity = state.env === 'interior' ? 1.2 : 2.5;
+            dirLight.position.set(state.env === 'interior' ? 5 : -10, state.env === 'interior' ? 10 : 15, state.env === 'interior' ? 5 : 10);
             concreteMaterial.needsUpdate = true;
         }
 
-        function changeLighting(type, btn) {
-            document.querySelectorAll('#tab-light .option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-            dirLight.intensity = type === 'interior' ? 1.2 : 2.5;
-            dirLight.position.set(type === 'interior' ? 5 : -10, type === 'interior' ? 10 : 15, type === 'interior' ? 5 : 10);
+        function resize3DCanvas() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+        }
+        window.addEventListener('resize', resize3DCanvas); setTimeout(resize3DCanvas, 100);
+
+        function animate() { 
+            requestAnimationFrame(animate); 
+            if(state.mode === '3d') { controls3d.update(); renderer.render(scene, camera); }
+        } 
+        animate();
+
+        // --- IRO.JS 3D COLOR DIAL ENGINE ---
+        var colorPicker = new iro.ColorPicker("#color-dial", { width: 200, color: "#a3a3a3", borderWidth: 2, borderColor: "#ffffff", layout: [ { component: iro.ui.Wheel }, { component: iro.ui.Slider, options: { sliderType: 'value' } } ] });
+        
+        function updateColorDial(hexString) {
+            colorPicker.color.set(hexString);
+            const box = document.getElementById('mixer-preview');
+            box.style.backgroundColor = hexString; box.innerText = hexString.toUpperCase(); 
+            box.style.color = colorPicker.color.hsl.l > 70 ? '#111' : '#fff';
         }
 
-        var colorPicker = new iro.ColorPicker("#color-dial", { width: 200, color: "#a3a3a3", borderWidth: 2, borderColor: "#ffffff", layout: [ { component: iro.ui.Wheel }, { component: iro.ui.Slider, options: { sliderType: 'value' } } ] });
         colorPicker.on('color:change', function(color) {
-            concreteMaterial.color.set(color.hexString); 
-            const box = document.getElementById('mixer-preview');
-            box.style.backgroundColor = color.hexString; box.innerText = color.hexString.toUpperCase(); 
-            box.style.color = color.hsl.l > 70 ? '#111' : '#fff';
+            if(state.mode === '3d') {
+                concreteMaterial.color.set(color.hexString); 
+                updateColorDial(color.hexString);
+            }
         });
     </script>
 </body>
